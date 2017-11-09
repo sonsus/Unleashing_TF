@@ -1,7 +1,7 @@
 running_remote.txt
 --------------------------------------------------
 
-`python
+`bash
     $ nohup jupyter notebook &
     $ type 'b', and then 'g'
     $ disown -h
