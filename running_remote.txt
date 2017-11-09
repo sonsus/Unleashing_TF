@@ -1,0 +1,12 @@
+running_remote.txt
+--------------------------------------------------
+
+`python
+    $ nohup jupyter notebook &
+    $ type 'b', and then 'g'
+    $ disown -h
+`
+
+now after terminating ssh connection, 
+process will continue to run
+

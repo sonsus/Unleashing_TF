@@ -1,0 +1,22 @@
+connection buildup!
+
+1. install google-cloud-SDK
+2. $gcloud init , login via OAuth2
+3. Identity Access Management = IAM
+    (read those later on if required)
+4. adding team member for access
+    menu -> IAM -> add+ -> select role and email and add
+5. connect
+    gcloud compute ssh seonils@instance-1
+
+
+file transfer
+@local terminal 
+gcloud compute scp [from/filename] [to@instancename]
+
+
+access (login)
+
+gcloud compute ssh seonils@instance-3
+
+

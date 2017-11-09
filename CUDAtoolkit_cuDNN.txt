@@ -1,0 +1,68 @@
+toolkit 9.0 doesnt work. try again with 8.0
+maybe compatible cudnn would be 5.1 or 6
+
+
+trying with Toolkit 8.0, cuDNNv6 under Ubuntu16.04
+
+After getting repo file
+`sudo dpkg -i cuda-repo-ubuntu1604_8.0.61-1_amd64.deb`
+`sudo apt-get update` 
+`sudo apt-get upgrade`
+`sudo apt-get install cuda-8-0`  (sudo apt-get install cuda will cause CUDA 9.0)
+
+
+and then uncompress cuDNN and copy it (see below)
+
+
+
+======================================================================
+Install cuda toolkit
+Appropriate cuda toolkit from : I chose network deb which is light
+
+https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1704&target_type=debnetwork
+
+======================================================================
+
+
+
+and then,
+
+`sudo dpkg -i cuda-repo-ubuntu1704_9.0.176-1_amd64.deb`
+    if above doesnt work, try 
+                                $sudo dpkg -i --force-all cuda-repo-ubuntu1704_9.0.176-1_amd64.deb
+`sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1704/x86_64/7fa2af80.pub`
+`sudo apt-get update`
+`sudo apt-get install cuda`
+
+
+
+
+
+=====================================================================
+Install cuDNN
+choose appropriate version compatible
+https://developer.nvidia.com/rdp/cudnn-download
+
+=====================================================================
+
+
+tar -xvf cudnn-9.0*
+$ sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+$ sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+$ sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+
+
+***caution: this guide is written for ubuntu 16.04
+
+
+
+===================================================================== 
+purging cuda toolkit and dependencies
+
+    $sudo apt-get remove --auto-remove nvidia-cuda-toolkit
+
+purging config
+
+    $sudo apt-get purge cuda
+
+reset the machine if you are purging and restarting the install

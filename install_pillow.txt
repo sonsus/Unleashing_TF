@@ -1,0 +1,11 @@
+to use 
+
+scipy.misc.imread()
+
+then install pillow (successor of PIL from python 2)
+
+
+https://docs.scipy.org/doc/scipy/reference/misc.html
+
+"Note that Pillow is not a dependency of SciPy but the image manipulation functions indicated in the list below are not available without it:"
+
