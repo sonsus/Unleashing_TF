@@ -1,0 +1,41 @@
+seems like running conda with authetication improved reaction time of conda on windows
+                              ^^^^^^^^^^^^^                           ^^^^^^^^^^^^^^^^
+
+some tips
+
+> conda info -e
+> conda create -n someenvname python=2.7 package1 package2 ...
+> conda remove env -n someenvname --all
+> conda update conda 
+        (if fails or hangs, look at the description below)
+
+------------------------------------------------------------------------
+
+when conda fails when installing a new package with error like below:
+
+tried: 
+>> conda create -n py27 python=2.7 matplotlib scipy numpy jupyter
+
+
+ out>  CertiVerificationError(?): ... corrupted ... (not exact expression we see)
+
+
+cmd
+>> conda clean --packages --tarballs
+    cleaning up repo(?) tarballs? 
+>> conda clean --all
+    cleaning up caches
+
+might help
+
+-------------------------------------------------------------------------
+
+conda update conda: upgrade conda to the next version
+
+if fails, try below lines (with authetication)
+
+conda --debug update conda
+
+and then
+
+conda update conda

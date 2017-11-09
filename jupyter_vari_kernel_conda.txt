@@ -1,0 +1,24 @@
+1. manually installing another version of python kernel on jupyter
+
+for conda 
+    $python -m ipykernel install --user
+
+2. list jupyter kernels recognized by itself
+    $activate env
+    $jupyter-kernelspec list
+
+3. check where jupyter looks up when it starts up.
+    $ipython kernel install --prefix /tmp 
+
+4. if kernel is not there, copy the dir where kernel and env installed as a whole, and paste it to there (do not move! copy!) 
+
+
+advanced...(not tried. kernel shouldnt be named as a python I guess.)
+
+5. installing custom kernel to a jupyter: (copying custom kernel specified below to the place where jupyter looks up)
+    $jupyter kernelspec install /where/is/ur/custom/kernel/custompython
+
+
+--------------------------------------------------------------------------------------------
+ref
+https://ipython.readthedocs.io/en/latest/install/kernel_install.html
