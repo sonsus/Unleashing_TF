@@ -27,6 +27,44 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
+def overlap(X, window_size, window_step):
+    """
+    Create an overlapped version of X
+    Parameters
+    ----------
+    X : ndarray, shape=(n_samples,)
+        Input signal to window and overlap
+    window_size : int
+        Size of windows to take
+    window_step : int
+        Step size between windows
+    Returns
+    -------
+    X_strided : shape=(n_windows, window_size)
+        2D array of overlapped X
+    """
+    if window_size % 2 != 0:
+        raise ValueError("Window size must be even!")
+    # Make sure there are an even number of windows before stridetricks
+    append = np.zeros((window_size - len(X) % window_size))
+    X = np.hstack((X, append))
+
+    ws = window_size
+    ss = window_step
+    a = X
+
+    valid = len(a) - ws
+    nw = (valid) // ss
+    out = np.ndarray((nw,ws),dtype = a.dtype)
+
+    for i in xrange(nw):
+        # "slide" the window along the samples
+        start = i * ss
+        stop = start + ws
+        out[i] = a[start : stop]
+
+    return out
+
 
 def stft(X, fftsize=128, step=65, mean_normalize=True, real=False,
          compute_onesided=True):
@@ -102,6 +140,7 @@ def xcorr_offset(x1, x2):
 
 def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     """
+    
     Under MSR-LA License
     Based on MATLAB implementation from Spectrogram Inversion Toolbox
     References
@@ -120,7 +159,7 @@ def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     size = int(X_s.shape[1] // 2)
     wave = np.zeros((X_s.shape[0] * step + size))
     # Getting overflow warnings with 32 bit...
-    wave = wave.astype('float64')
+    wave = wave.astype('float32')
     total_windowing_sum = np.zeros((X_s.shape[0] * step + size))
     win = 0.54 - .46 * np.cos(2 * np.pi * np.arange(size) / (size - 1))
 
@@ -212,31 +251,51 @@ highcut = 15000 # Hz # High cut for our butter bandpass filter
 
 
 # Grab your wav and filter it
+how_long=int(raw_input("length of the piece: "))
 mywav = 'mono256.wav'
 rate, data = wavfile.read(mywav)
+print rate
 data = butter_bandpass_filter(data, lowcut, highcut, rate, order=1)
 # Only use a short clip for our demo
-if np.shape(data)[0]/float(rate) > 12:
-    data = data[0:rate*12] 
+if np.shape(data)[0]/float(rate) > how_long:
+    data = data[2*rate:(2+how_long)*rate] 
+    print data
 print 'Length in time (s): ', np.shape(data)[0]/float(rate)
 
-#this is for 10s. if we change 10 into 2 would it be 2s clip as well? 
+#this is for 10s. if we change 10 into 2 would it be 2s clip as well? yes
 
 
 
 #making spectrogram
-wav_spectrogram = pretty_spectrogram(data.astype('float64'), fft_size = fft_size, 
+wav_spectrogram = pretty_spectrogram(data.astype('float32'), fft_size = fft_size, 
                                    step_size = step_size, log = True, thresh = spec_thresh)
 
 #plotting it
-fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(20,4))
+fig, ax = plt.subplots(nrows=1,ncols=1)
+#fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(20,4))
 cax = ax.matshow(np.transpose(wav_spectrogram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
-fig.colorbar(cax) # if we dispose this line, then the figure would appear w/o colorbar only?
+#fig.colorbar(cax) # if we dispose this line, then the figure would appear w/o colorbar only?
 plt.title('Original Spectrogram')
+#plt.show()
 
 
 
 # Invert from the spectrogram back to a waveform
 recovered_audio_orig = invert_pretty_spectrogram(wav_spectrogram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
-IPython.display.Audio(data=recovered_audio_orig, rate=rate) # play the audio
+
+
+with open("logger.txt", "a") as logger:
+    logger.write("wavfile.read \n")
+    logger.write(data)
+    logger.write('\n')
+    logger.write("wavspec\n")
+    logger.write(wav_spectrogram)
+    logger.write(recovered_audio_orig)
+
+
+
+
+
+wavfile.write('test_recovered.wav', 44100, recovered_audio_orig)
+#IPython.display.Audio(data=recovered_audio_orig, rate=rate) # play the audio
