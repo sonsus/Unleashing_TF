@@ -54,10 +54,10 @@ def overlap(X, window_size, window_step):
     a = X
 
     valid = len(a) - ws
-    nw = (valid) // ss
+    nw = int((valid) // ss)
     out = np.ndarray((nw,ws),dtype = a.dtype)
 
-    for i in xrange(nw):
+    for i in range(nw):
         # "slide" the window along the samples
         start = i * ss
         stop = start + ws
@@ -214,7 +214,7 @@ def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=False):
     X_best = copy.deepcopy(X_s)
     for i in range(n_iter):
         if verbose:
-            print("Runnning iter %i" % i)
+            print(("Runnning iter %i" % i))
         if i == 0:
             X_t = invert_spectrogram(X_best, step, calculate_offset=True,
                                      set_zero_phase=True)
@@ -243,7 +243,7 @@ def invert_pretty_spectrogram(X_s, log = True, fft_size = 512, step_size = 512/4
 
 ### Parameters ###
 fft_size = 2048 # window size for the FFT (resolution for freq bin)
-step_size = fft_size/16 # distance to slide along the window (in time)
+step_size = int(fft_size/16) # distance to slide along the window (in time)
 spec_thresh = 4 # threshold for spectrograms (lower filters out more noise)
 lowcut = 500 # Hz # Low cut for our butter bandpass filter
 highcut = 15000 # Hz # High cut for our butter bandpass filter
@@ -251,16 +251,17 @@ highcut = 15000 # Hz # High cut for our butter bandpass filter
 
 
 # Grab your wav and filter it
-how_long=int(raw_input("length of the piece: "))
+startpt=int(input("what pt do you want your music start: "))
+how_long=int(input("length of the piece: "))
 mywav = 'mono256.wav'
 rate, data = wavfile.read(mywav)
-print rate
 data = butter_bandpass_filter(data, lowcut, highcut, rate, order=1)
 # Only use a short clip for our demo
 if np.shape(data)[0]/float(rate) > how_long:
-    data = data[2*rate:(2+how_long)*rate] 
-    print data
-print 'Length in time (s): ', np.shape(data)[0]/float(rate)
+    data = data[startpt*rate:(startpt+how_long)*rate] 
+    print(data)
+    print(len(data))
+print('Length in time (s): ', np.shape(data)[0]/float(rate))
 
 #this is for 10s. if we change 10 into 2 would it be 2s clip as well? yes
 
@@ -284,18 +285,23 @@ plt.title('Original Spectrogram')
 recovered_audio_orig = invert_pretty_spectrogram(wav_spectrogram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
 
+print(type(recovered_audio_orig))
+print(recovered_audio_orig.shape)
+print(recovered_audio_orig)
+print(len(recovered_audio_orig))
 
+'''
 with open("logger.txt", "a") as logger:
     logger.write("wavfile.read \n")
-    logger.write(data)
+    logger.write(str(data))
     logger.write('\n')
     logger.write("wavspec\n")
-    logger.write(wav_spectrogram)
-    logger.write(recovered_audio_orig)
-
-
-
-
-
+    logger.write(str(wav_spectrogram))
+    logger.write(str(recovered_audio_orig))
+'''
+#normalize
+recovered_audio_orig/=max(recovered_audio_orig)
+#truncate -- because of inconsistency of the recovered array length with original one. 
+recovered_audio_orig=recovered_audio_orig[:rate*how_long]
 wavfile.write('test_recovered.wav', 44100, recovered_audio_orig)
 #IPython.display.Audio(data=recovered_audio_orig, rate=rate) # play the audio
