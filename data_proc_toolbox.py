@@ -285,16 +285,22 @@ plt.savefig("C:/Users/SEONIL/Documents/for_analysis.png",bbox_inches="tight",pad
 
 #spectrogram in raw view?
 #imported imageio as img
-img.imwrite("C:/Users/SEONIL/Documents/test_cv2.jpg",np.transpose(wav_spectrogram))
+cv2.imwrite("C:/Users/SEONIL/Documents/cv2.jpg",wav_spectrogram)   #doing this just converts whole contents into 0. normalize the contents and save again!
+a= cv2.imread("C:/Users/SEONIL/Documents/cv2.jpg",0)
+print("row of pic (time)", len(a))
+print("col of pic (#f-bin)", len(a[0]))
+
+'''
+img.imwrite("C:/Users/SEONIL/Documents/imgio.jpg",np.transpose(wav_spectrogram))
 a=cv2.imread("C:/Users/SEONIL/Documents/test_cv2.jpg", 0)
 f0=a.copy()
 f0=cv2.flip(a, 0)
 cv2.imwrite("C:/Users/SEONIL/Documents/nowdone.png",f0)
-
+'''
 
 with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
     np.set_printoptions(threshold=np.nan)
-    logger.write(str(a))
+#    logger.write(str(a))
 #np.savetxt("C:/Users/SEONIL/Documents/logger.csv", wav_spectrogram)
 
 
