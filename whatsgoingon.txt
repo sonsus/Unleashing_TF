@@ -3,3 +3,9 @@
 2) 200초로 실험
 
 자르면 인코딩문제는 해결되는걸까?
+
+
+스펙트로그램을 사진으로
+사진을 스펙트로그램으로 해석 (이게 제일 중요...맙소사)
+
+https://stackoverflow.com/questions/39695645/scipy-write-audio-issue

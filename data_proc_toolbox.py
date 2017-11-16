@@ -12,7 +12,8 @@ import copy
 from scipy.io import wavfile
 from scipy.signal import butter, lfilter
 import scipy.ndimage
-
+import imageio as img
+import cv2
 #here stands for converting wavfile objs by scipy.io.wavefile into spectrograms
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -132,7 +133,7 @@ def xcorr_offset(x1, x2):
     x2 = x2 - x2.mean()
     frame_size = len(x2)
     half = frame_size // 2
-    corrs = np.convolve(x1.astype('float32'), x2[::-1].astype('float32'))
+    corrs = np.convolve(x1.astype('float64'), x2[::-1].astype('float64'))
     corrs[:half] = -1E30
     corrs[-half:] = -1E30
     offset = corrs.argmax() - len(x1)
@@ -159,7 +160,7 @@ def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     size = int(X_s.shape[1] // 2)
     wave = np.zeros((X_s.shape[0] * step + size))
     # Getting overflow warnings with 32 bit...
-    wave = wave.astype('float32')
+    wave = wave.astype('float64')
     total_windowing_sum = np.zeros((X_s.shape[0] * step + size))
     win = 0.54 - .46 * np.cos(2 * np.pi * np.arange(size) / (size - 1))
 
@@ -193,7 +194,7 @@ def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     wave = np.real(wave) / (total_windowing_sum + 1E-6)
     return wave
 
-def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=False):
+def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=True):
     """
     Under MSR-LA License
     Based on MATLAB implementation from Spectrogram Inversion Toolbox
@@ -245,8 +246,8 @@ def invert_pretty_spectrogram(X_s, log = True, fft_size = 512, step_size = 512/4
 fft_size = 2048 # window size for the FFT (resolution for freq bin)
 step_size = int(fft_size/16) # distance to slide along the window (in time)
 spec_thresh = 4 # threshold for spectrograms (lower filters out more noise)
-lowcut = 500 # Hz # Low cut for our butter bandpass filter
-highcut = 15000 # Hz # High cut for our butter bandpass filter
+lowcut = 50 # Hz # Low cut for our butter bandpass filter
+highcut = 17000 # Hz # High cut for our butter bandpass filter
 
 
 
@@ -268,16 +269,33 @@ print('Length in time (s): ', np.shape(data)[0]/float(rate))
 
 
 #making spectrogram
-wav_spectrogram = pretty_spectrogram(data.astype('float32'), fft_size = fft_size, 
+wav_spectrogram = pretty_spectrogram(data.astype('float64'), fft_size = fft_size, 
                                    step_size = step_size, log = True, thresh = spec_thresh)
+
 
 #plotting it
 fig, ax = plt.subplots(nrows=1,ncols=1)
 #fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(20,4))
 cax = ax.matshow(np.transpose(wav_spectrogram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
 #fig.colorbar(cax) # if we dispose this line, then the figure would appear w/o colorbar only?
-plt.title('Original Spectrogram')
+#plt.title('Original Spectrogram')
 #plt.show()
+plt.savefig("C:/Users/SEONIL/Documents/for_analysis.png",bbox_inches="tight",pad_inches=0)
+
+
+#spectrogram in raw view?
+#imported imageio as img
+img.imwrite("C:/Users/SEONIL/Documents/test_cv2.jpg",np.transpose(wav_spectrogram))
+a=cv2.imread("C:/Users/SEONIL/Documents/test_cv2.jpg", 0)
+f0=a.copy()
+f0=cv2.flip(a, 0)
+cv2.imwrite("C:/Users/SEONIL/Documents/nowdone.png",f0)
+
+
+with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
+    np.set_printoptions(threshold=np.nan)
+    logger.write(str(a))
+#np.savetxt("C:/Users/SEONIL/Documents/logger.csv", wav_spectrogram)
 
 
 
@@ -285,23 +303,25 @@ plt.title('Original Spectrogram')
 recovered_audio_orig = invert_pretty_spectrogram(wav_spectrogram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
 
+
+
+'''audio wav files are just amp vs time 1D array (with samplying rate. 44100 elements corresponds to 1s)
 print(type(recovered_audio_orig))
 print(recovered_audio_orig.shape)
 print(recovered_audio_orig)
 print(len(recovered_audio_orig))
+'''
 
-'''
-with open("logger.txt", "a") as logger:
-    logger.write("wavfile.read \n")
-    logger.write(str(data))
-    logger.write('\n')
-    logger.write("wavspec\n")
-    logger.write(str(wav_spectrogram))
-    logger.write(str(recovered_audio_orig))
-'''
+
+
 #normalize
 recovered_audio_orig/=max(recovered_audio_orig)
+recovered_audio_orig*=3
 #truncate -- because of inconsistency of the recovered array length with original one. 
-recovered_audio_orig=recovered_audio_orig[:rate*how_long]
-wavfile.write('test_recovered.wav', 44100, recovered_audio_orig)
+#encoding never had been a problem. just groove player sucks at reading those
+
+
+wavfile.write('C:/Users/SEONIL/Documents/not_trunc.wav', 44100, recovered_audio_orig)
+#wavfile.write('C:/Users/SEONIL/Documents/trunc_tail.wav', 44100, recovered_audio_orig1)
+#wavfile.write('C:/Users/SEONIL/Documents/trunc_head.wav', 44100, recovered_audio_orig2)
 #IPython.display.Audio(data=recovered_audio_orig, rate=rate) # play the audio
