@@ -1,0 +1,20 @@
+"nov17th.txt
+
+tried dataprocessing
+
+1. found that recovered aud is not perfect in its nature. sounds bad (no matter literally or not).
+2. wav_spectrogram 
+    - np.ndarray
+    - float32(??)
+    - grayscale image with strange range of numbers
+3. tried open it with imageio lib
+    - converts contents with uint8 which worsen the quality of the info
+    - and it flips the image somehow
+4. tried open it with cv2
+    - cv2.imwrite(\"path/name\",np.ndarray) : np.ndarray contents need to be float# [0,1)
+    - so just putting wav_spectrogram into cv2.imwrite() will result all 0 array, just black img.
+5. not straight forward but...
+    howbout using wav_spectrogram ndarray as an input for our model? 
+
+    it wouldnt hurt our result and
+    might be easier to visualize the result. 

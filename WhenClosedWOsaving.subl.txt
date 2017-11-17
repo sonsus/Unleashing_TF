@@ -1,0 +1,17 @@
+when_closed_file_w/o_saving.txt
+
+>>>find an old session file!<<<
+
+Damn!
+
+1.try gitkraken whether you have commited it
+2.if not, becareful not to renew the session of "subl" and be a detective to find the session file
+3.especially the directories below !
+
+
+
+in windows
+C:\Users\SEONIL\AppData\Roaming\Sublime Text 3\Local\
+
+in ubuntu
+Somewhere/Appdata/of/Sublime/lives/ .... /Lib/session

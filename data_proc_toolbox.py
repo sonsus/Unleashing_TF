@@ -1,9 +1,39 @@
-'''
-# iPython specific stuff
-%matplotlib inline       #for interactive use of matplotlib like matlab/mathematica
-import IPython.display
-from ipywidgets import interact, interactive, fixed
-'''
+#####REFERENCES#####
+
+"""
+functions used for spectrogram inversion to audio, namely,  
+    def xcorr_offset(x1, x2):
+    def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
+    def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=True):
+are refered from as mentioned below
+
+Under MSR-LA License
+Based on MATLAB implementation from Spectrogram Inversion Toolbox
+References
+----------
+D. Griffin and J. Lim. Signal estimation from modified
+short-time Fourier transform. IEEE Trans. Acoust. Speech
+Signal Process., 32(2):236-243, 1984.
+Malcolm Slaney, Daniel Naar and Richard F. Lyon. Auditory
+Model Inversion for Sound Separation. Proc. IEEE-ICASSP,
+Adelaide, 1994, II.77-80.
+Xinglei Zhu, G. Beauregard, L. Wyse. Real-Time Signal
+Estimation from Modified Short-Time Fourier Transform
+Magnitude Spectra. IEEE Transactions on Audio Speech and
+Language Processing, 08/2007.
+"""
+
+
+"""
+other functions that ft to make spectrograms from audio is refered from
+
+Python-Spectrograms-MFCC-and-Inversion-checkpoint-checkpoint.ipynb
+
+by 
+"""
+
+
+
 
 # Packages we're using
 import numpy as np
@@ -113,22 +143,6 @@ def pretty_spectrogram(d,log = True, thresh= 5, fft_size = 512, step_size = 64):
 #from here, matlab ported codes of inverting spectrograms
 
 def xcorr_offset(x1, x2):
-    """
-    Under MSR-LA License
-    Based on MATLAB implementation from Spectrogram Inversion Toolbox
-    References
-    ----------
-    D. Griffin and J. Lim. Signal estimation from modified
-    short-time Fourier transform. IEEE Trans. Acoust. Speech
-    Signal Process., 32(2):236-243, 1984.
-    Malcolm Slaney, Daniel Naar and Richard F. Lyon. Auditory
-    Model Inversion for Sound Separation. Proc. IEEE-ICASSP,
-    Adelaide, 1994, II.77-80.
-    Xinglei Zhu, G. Beauregard, L. Wyse. Real-Time Signal
-    Estimation from Modified Short-Time Fourier Transform
-    Magnitude Spectra. IEEE Transactions on Audio Speech and
-    Language Processing, 08/2007.
-    """
     x1 = x1 - x1.mean()
     x2 = x2 - x2.mean()
     frame_size = len(x2)
@@ -140,23 +154,6 @@ def xcorr_offset(x1, x2):
     return offset
 
 def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
-    """
-    
-    Under MSR-LA License
-    Based on MATLAB implementation from Spectrogram Inversion Toolbox
-    References
-    ----------
-    D. Griffin and J. Lim. Signal estimation from modified
-    short-time Fourier transform. IEEE Trans. Acoust. Speech
-    Signal Process., 32(2):236-243, 1984.
-    Malcolm Slaney, Daniel Naar and Richard F. Lyon. Auditory
-    Model Inversion for Sound Separation. Proc. IEEE-ICASSP,
-    Adelaide, 1994, II.77-80.
-    Xinglei Zhu, G. Beauregard, L. Wyse. Real-Time Signal
-    Estimation from Modified Short-Time Fourier Transform
-    Magnitude Spectra. IEEE Transactions on Audio Speech and
-    Language Processing, 08/2007.
-    """
     size = int(X_s.shape[1] // 2)
     wave = np.zeros((X_s.shape[0] * step + size))
     # Getting overflow warnings with 32 bit...
@@ -195,22 +192,6 @@ def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     return wave
 
 def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=True):
-    """
-    Under MSR-LA License
-    Based on MATLAB implementation from Spectrogram Inversion Toolbox
-    References
-    ----------
-    D. Griffin and J. Lim. Signal estimation from modified
-    short-time Fourier transform. IEEE Trans. Acoust. Speech
-    Signal Process., 32(2):236-243, 1984.
-    Malcolm Slaney, Daniel Naar and Richard F. Lyon. Auditory
-    Model Inversion for Sound Separation. Proc. IEEE-ICASSP,
-    Adelaide, 1994, II.77-80.
-    Xinglei Zhu, G. Beauregard, L. Wyse. Real-Time Signal
-    Estimation from Modified Short-Time Fourier Transform
-    Magnitude Spectra. IEEE Transactions on Audio Speech and
-    Language Processing, 08/2007.
-    """
     reg = np.max(X_s) / 1E8
     X_best = copy.deepcopy(X_s)
     for i in range(n_iter):
@@ -288,7 +269,7 @@ plt.savefig("C:/Users/SEONIL/Documents/for_analysis.png",bbox_inches="tight",pad
 cv2.imwrite("C:/Users/SEONIL/Documents/cv2.jpg",wav_spectrogram)   #doing this just converts whole contents into 0. normalize the contents and save again!
 a= cv2.imread("C:/Users/SEONIL/Documents/cv2.jpg",0)
 print("row of pic (time)", len(a))
-print("col of pic (#f-bin)", len(a[0]))
+print("col of pic (#f-bin)", len(a[0]))#f**k yeaH I cracked this from bottom! so much primitive way I guess
 
 '''
 img.imwrite("C:/Users/SEONIL/Documents/imgio.jpg",np.transpose(wav_spectrogram))
