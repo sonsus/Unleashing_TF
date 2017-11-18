@@ -227,6 +227,16 @@ def invert_pretty_spectrogram(X_s, log = True, fft_size = 512, step_size = 512/4
 
 
 
+
+
+
+
+
+
+
+
+'''
+
 # Grab your wav and filter it
 startpt=int(input("what pt do you want your music start: "))
 how_long=int(input("length of the piece: "))
@@ -260,22 +270,23 @@ plt.savefig("C:/Users/SEONIL/Documents/for_analysis.png",bbox_inches="tight",pad
 
 #spectrogram in raw view?
 #imported imageio as img
+
 cv2.imwrite("C:/Users/SEONIL/Documents/cv2.jpg",wav_spectrogram)   #doing this just converts whole contents into 0. normalize the contents and save again!
 a= cv2.imread("C:/Users/SEONIL/Documents/cv2.jpg",0)
 print("row of pic (time)", len(a))
 print("col of pic (#f-bin)", len(a[0]))#f**k yeaH I cracked this from bottom! so much primitive way I guess
 
-'''
+
 img.imwrite("C:/Users/SEONIL/Documents/imgio.jpg",np.transpose(wav_spectrogram))
 a=cv2.imread("C:/Users/SEONIL/Documents/test_cv2.jpg", 0)
 f0=a.copy()
 f0=cv2.flip(a, 0)
 cv2.imwrite("C:/Users/SEONIL/Documents/nowdone.png",f0)
-'''
 
-with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
-    np.set_printoptions(threshold=np.nan)
-#    logger.write(str(a))
+
+#with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
+    #np.set_printoptions(threshold=np.nan)
+    #logger.write(str(a))
 #np.savetxt("C:/Users/SEONIL/Documents/logger.csv", wav_spectrogram)
 
 
@@ -285,13 +296,12 @@ recovered_audio_orig = invert_pretty_spectrogram(wav_spectrogram, fft_size = fft
                                             step_size = step_size, log = True, n_iter = 10)
 
 
-
-'''audio wav files are just amp vs time 1D array (with samplying rate. 44100 elements corresponds to 1s)
+#audio wav files are just amp vs time 1D array (with samplying rate. 44100 elements corresponds to 1s)
 print(type(recovered_audio_orig))
 print(recovered_audio_orig.shape)
 print(recovered_audio_orig)
 print(len(recovered_audio_orig))
-'''
+
 
 
 
@@ -306,3 +316,5 @@ wavfile.write('C:/Users/SEONIL/Documents/not_trunc.wav', 44100, recovered_audio_
 #wavfile.write('C:/Users/SEONIL/Documents/trunc_tail.wav', 44100, recovered_audio_orig1)
 #wavfile.write('C:/Users/SEONIL/Documents/trunc_head.wav', 44100, recovered_audio_orig2)
 #IPython.display.Audio(data=recovered_audio_orig, rate=rate) # play the audio
+
+'''
