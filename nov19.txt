@@ -1,0 +1,14 @@
+nov19.txt
+
+what's done
+
+1.preprocess.py  --> testing / debugging is left
+2.after doing it, prepare adapt this code into the model
+
+
+
+
+missions for chanmini
+0.song names rearange
+1.tagfile modify
+2.read the code and adapt it to the model
