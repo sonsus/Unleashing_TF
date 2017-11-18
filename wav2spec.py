@@ -37,14 +37,17 @@ by
 
 # Packages we're using
 import numpy as np
-import matplotlib.pyplot as plt
 import copy
 from scipy.io import wavfile
 from scipy.signal import butter, lfilter
-#import scipy.ndimage
-#import imageio as img
-#import cv2
-#here stands for converting wavfile objs by scipy.io.wavefile into spectrograms
+
+### Parameters ###
+fft_size = 2048 # window size for the FFT (resolution for freq bin)
+step_size = int(fft_size/16) # distance to slide along the window (in time)
+spec_thresh = 4 # threshold for spectrograms (lower filters out more noise)
+lowcut = 50 # Hz # Low cut for our butter bandpass filter
+highcut = 17000 # Hz # High cut for our butter bandpass filter
+
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
@@ -221,14 +224,6 @@ def invert_pretty_spectrogram(X_s, log = True, fft_size = 512, step_size = 512/4
     X_s = np.concatenate([X_s, X_s[:, ::-1]], axis=1)
     X_t = iterate_invert_spectrogram(X_s, fft_size, step_size, n_iter=n_iter)
     return X_t
-
-
-### Parameters ###
-fft_size = 2048 # window size for the FFT (resolution for freq bin)
-step_size = int(fft_size/16) # distance to slide along the window (in time)
-spec_thresh = 4 # threshold for spectrograms (lower filters out more noise)
-lowcut = 50 # Hz # Low cut for our butter bandpass filter
-highcut = 17000 # Hz # High cut for our butter bandpass filter
 
 
 
