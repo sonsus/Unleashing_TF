@@ -91,7 +91,7 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
     songpiece_list=[]
     for one_range in rangelist_set:
         start=int(one_range[0]*rate)
-        length=int(win_size*rate)               #if not
+        length=int(win_size*rate)              
         if start+length>len(filtered_wav[0]): 
             continue
         else: 
@@ -107,52 +107,50 @@ def get_spec_concat_array(voice_crop_arry, orig_crop_arry):
         spec_o=get_specgram(orig_crop_arry[i])
         concat_piece=np.concatenate((spec_v,spec_o), axis=1)
         spec_concat_list.append(concat_piece)
+#        zip_piece=np.array(list(zip(spec_v, spec_o)))
+#        spec_zipped_list.append(concat_piece)
     spec_concat_array=np.array(spec_concat_list)
-    
     return spec_concat_array
 
-def get_training_set_matrix(win_size,st_size, voicerange_list, orig_song_wav, voice_song_wav, tagfilename):
+def get_shuffled_tr_ex_array(win_size,st_size, voicerange_list, orig_song_wav, voice_song_wav, tagfilename):
     #windowsize and stepsize for chopping wavs. not for specgram
     tr_set_list=[]
-
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
-        else:
-            try: 
-                rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
-                rate_o, raw_o_wav=wavfile.read(songdir+wav)
-            except: 
-                with open(reading_wav_err.txt, 'a') as log:
-                    log.write("while reading %s, exception occured! needs check",wav)
+        else: 
+            rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
+            rate_o, raw_o_wav=wavfile.read(songdir+wav)
+
+
             voice_rangetuples_list=tag2range(wav)
             v_songpiece_array=iterative_windower(win_size, st_size, raw_v_wav, voice_rangetuples_list)
             o_songpiece_array=iterative_windower(win_size, st_size, raw_o_wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)
-            tr_set_mat.append(spec_concat_array)
-    tr_set_mat=np.array(tr_set_list)
-    return tr_set_mat
+            np.random.shuffle(spec_concat_array)
+
+    tr_ex_array=np.array(tr_set_list)
+    np.random.shuffle(tr_ex_array)
+    return tr_ex_array # thus array is shuffled
 
 
 ####### additional but might be quite critical utils #######
 
 #will be used for mode collapse checking
-def write_specgram_jpg(specgram, jpgname)   #jpgname with .jpg
+def write_specgram_jpg(specgram, jpgname):   #jpgname with .jpg
     fig, ax = plt.subplots(nrows=1,ncols=1)
     cax = ax.matshow(np.transpose(wav_spectrogram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
-    plt.title('left_1/2 = voiceonly  right_1/2 = ensemble')
+    plt.title('upper: voice only, lower: ensemble')
     plt.savefig(check_training_dir+jpgname,bbox_inches="tight",pad_inches=0)
 
 
 #takes too much time running. must be used only for testing
-def recover_audio(pathandwavname, specgram)
+def recover_audio(pathandwavname, specgram):
     recovered=w2s.invert_pretty_spectrogram(specgram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
     #recovered/=max(recovered_audio_orig)
     #recovered*=3                                       #normalize --> amplify.
     wavfile.write(pathandwavname, 44100, recovered)
-
-
 
 
 

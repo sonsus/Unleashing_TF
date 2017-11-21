@@ -5,7 +5,7 @@ functions used for spectrogram inversion to audio, namely,
     def xcorr_offset(x1, x2):
     def invert_spectrogram(X_s, step, calculate_offset=True, set_zero_phase=True):
     def iterate_invert_spectrogram(X_s, fftsize, step, n_iter=10, verbose=True):
-are refered from as mentioned below
+are referred from as mentioned below
 
 Under MSR-LA License
 Based on MATLAB implementation from Spectrogram Inversion Toolbox

@@ -42,8 +42,8 @@ import copy
 from scipy.io import wavfile
 from scipy.signal import butter, lfilter
 #import scipy.ndimage
-#import imageio as img
-#import cv2
+import imageio as img
+import cv2
 #here stands for converting wavfile objs by scipy.io.wavefile into spectrograms
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -260,23 +260,24 @@ cax = ax.matshow(np.transpose(wav_spectrogram), interpolation='nearest', aspect=
 #fig.colorbar(cax) # if we dispose this line, then the figure would appear w/o colorbar only?
 #plt.title('Original Spectrogram')
 #plt.show()
-plt.savefig("C:/Users/SEONIL/Documents/for_analysis.png",bbox_inches="tight",pad_inches=0)
+plt.savefig("C:/Users/SEONIL/Documents/for_analysis1.png",bbox_inches="tight",pad_inches=0)
 
 
 #spectrogram in raw view?
 #imported imageio as img
-cv2.imwrite("C:/Users/SEONIL/Documents/cv2.jpg",wav_spectrogram)   #doing this just converts whole contents into 0. normalize the contents and save again!
-a= cv2.imread("C:/Users/SEONIL/Documents/cv2.jpg",0)
+'''
+cv2.imwrite("C:/Users/SEONIL/Documents/imgio1.jpg",wav_spectrogram)   #doing this just converts whole contents into 0. normalize the contents and save again!
+a= cv2.imread("C:/Users/SEONIL/Documents/imgio1.jpg",0)
 print("row of pic (time)", len(a))
 print("col of pic (#f-bin)", len(a[0]))#f**k yeaH I cracked this from bottom! so much primitive way I guess
-
 '''
-img.imwrite("C:/Users/SEONIL/Documents/imgio.jpg",np.transpose(wav_spectrogram))
-a=cv2.imread("C:/Users/SEONIL/Documents/test_cv2.jpg", 0)
+
+img.imwrite("C:/Users/SEONIL/Documents/imgio1.jpg",np.transpose(wav_spectrogram))
+a=cv2.imread("C:/Users/SEONIL/Documents/imgio1.jpg", 0)
 f0=a.copy()
 f0=cv2.flip(a, 0)
 cv2.imwrite("C:/Users/SEONIL/Documents/nowdone.png",f0)
-'''
+
 
 with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
     np.set_printoptions(threshold=np.nan)
