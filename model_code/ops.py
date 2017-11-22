@@ -20,7 +20,7 @@ class batch_norm(object):
 def binary_cross_entropy(preds, targets, name=None):
     """Computes binary cross entropy given `preds`.
 
-    For brevity, let `x = `, `z = targets`.  The logistic loss is
+    For brevity, let `x = `, sub`z = targets`.  The logistic loss is
 
         loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
 

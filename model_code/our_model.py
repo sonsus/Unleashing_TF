@@ -85,7 +85,7 @@ class pix2pix(object):
         self.fake_B = self.generator(self.real_A)
 
         self.real_AB = tf.concat([self.real_A, self.real_B], 3)
-        self.fake_AB = tf.concat([self.real_A, self.fake_B], 3)
+        self.fake_AB = tf.concat([self.real_A, self.fake_B], 3)# why 3?
         self.D, self.D_logits = self.discriminator(self.real_AB, reuse=False)
         self.D_, self.D_logits_ = self.discriminator(self.fake_AB, reuse=True)
 
@@ -407,12 +407,13 @@ class pix2pix(object):
 
         # load testing input
         print("Loading testing images ...")
-        sample = [load_data(sample_file, is_test=True) for sample_file in sample_files]
 
-        if (self.is_grayscale):
-            sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
-        else:
-            sample_images = np.array(sample).astype(np.float32)
+
+        sample = [load_data(sample_file, is_test=True) for sample_file in sample_files]
+#        if (self.is_grayscale):
+        sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
+#        else:
+#            sample_images = np.array(sample).astype(np.float32)
 
         sample_images = [sample_images[i:i+self.batch_size]
                          for i in xrange(0, len(sample_images), self.batch_size)]

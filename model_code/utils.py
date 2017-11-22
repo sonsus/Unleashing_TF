@@ -36,7 +36,8 @@ def load_image(image_path):
     img_B = input_img[:, w2:w]
 
     return img_A, img_B
-
+#we dont use preprocess_A_and_B
+'''
 def preprocess_A_and_B(img_A, img_B, load_size=286, fine_size=256, flip=True, is_test=False):
     if is_test:
         img_A = scipy.misc.imresize(img_A, [fine_size, fine_size])
@@ -55,7 +56,7 @@ def preprocess_A_and_B(img_A, img_B, load_size=286, fine_size=256, flip=True, is
             img_B = np.fliplr(img_B)
 
     return img_A, img_B
-
+'''
 # -----------------------------
 
 def get_image(image_path, image_size, is_crop=True, resize_w=64, is_grayscale = False):
