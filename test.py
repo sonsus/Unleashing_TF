@@ -12,6 +12,17 @@ b=-1*np.array([[1,2],
 b1=b*2
 b_=np.concatenate((b,b1),axis=1)
 
+
+print(a)
+print(a1)
+print(a_)
+
+s0=np.split(a_,2, axis=0)
+s1=np.split(a_,2, axis=1)
+print(s0)
+print(s1)
+
+'''
 zero=np.zeros((2,2))
 one=np.ones((2,2))
 twos=2*one
@@ -34,7 +45,7 @@ res.append(five)
 print(res)
 np.random.shuffle(res)
 print(res)
-
+'''
 #c=np.concatenate((a,b),axis=1)
 
 

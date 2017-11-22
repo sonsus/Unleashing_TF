@@ -8,6 +8,8 @@ from six.moves import xrange
 
 from ops import *
 from utils import *
+#our things added 
+import preprocess as pr
 
 class pix2pix(object):
     def __init__(self, sess, image_size=256,
@@ -66,14 +68,19 @@ class pix2pix(object):
         self.checkpoint_dir = checkpoint_dir
         self.build_model()
 
+\real_A and real_B from preprocess.py
+\also voicepart need to be splitted for making fake_AB
+
     def build_model(self):
         self.real_data = tf.placeholder(tf.float32,
-                                        [self.batch_size, self.image_size, self.image_size,
+                                        [self.batch_size, None, None,
                                          self.input_c_dim + self.output_c_dim],
                                         name='real_A_and_B_images')
 
-        self.real_B = self.real_data[:, :, :, :self.input_c_dim]
-        self.real_A = self.real_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
+        #self.real_B = self.real_data[:, :, :, :self.input_c_dim]
+        #self.real_A = self.real_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
+        self.real_A = self.real_data[:, :, :, 0]
+        self.real_B = self.real_data[:, :, :, 1]
 
         self.fake_B = self.generator(self.real_A)
 
@@ -83,7 +90,6 @@ class pix2pix(object):
         self.D_, self.D_logits_ = self.discriminator(self.fake_AB, reuse=True)
 
         self.fake_B_sample = self.sampler(self.real_A)
-
         self.d_sum = tf.summary.histogram("d", self.D)
         self.d__sum = tf.summary.histogram("d_", self.D_)
         self.fake_B_sum = tf.summary.image("fake_B", self.fake_B)
@@ -108,6 +114,8 @@ class pix2pix(object):
 
         self.saver = tf.train.Saver()
 
+
+
 '''
     def load_random_samples(self):
         data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
@@ -121,13 +129,13 @@ class pix2pix(object):
 '''
 
     def sample_model(self, sample_dir, epoch, idx):
-        sample_images = self.load_random_samples()
+        sample_images = pr.get_shuffled_tr_ex_array()
         samples, d_loss, g_loss = self.sess.run(
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
         )
-        save_images(samples, [self.batch_size, 1],
-                    './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+        #save_images(samples, [self.batch_size, 1],
+        #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
 
     def train(self, args):
@@ -152,49 +160,44 @@ class pix2pix(object):
             print(" [*] Load SUCCESS")
         else:
             print(" [!] Load failed...")
+        
+        training_data=get_shuffled_tr_ex_array(pr.win_size, pr.st_size, pr.tagfilepath)
 
-        for epoch in xrange(args.epoch):
-            data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
-            #np.random.shuffle(data)
-            batch_idxs = min(len(data), args.train_size) // self.batch_size     # // : floor division
+        batch_idxs= len(data)//self.batch_size
 
-            for idx in xrange(0, batch_idxs):
-                batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
-                batch = [load_data(batch_file) for batch_file in batch_files]
-                if (self.is_grayscale):
-                    batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
-                else:
-                    batch_images = np.array(batch).astype(np.float32)
+        for idx in range(batch_idxs):
+            batch_images=training_data[idx*self.batch_size:(idx+1)*self.batch_size]
 
-                # Update D network
-                _, summary_str = self.sess.run([d_optim, self.d_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
+            # Update D network
+            _, summary_str = self.sess.run([d_optim, self.d_sum],
+                                           feed_dict={ self.real_data: batch_images })
+            self.writer.add_summary(summary_str, counter)
 
-                # Update G network
-                _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
+            # Update G network
+            _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                           feed_dict={ self.real_data: batch_images })
+            self.writer.add_summary(summary_str, counter)
 
-                # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
-                _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
+            # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
+            _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                           feed_dict={ self.real_data: batch_images })
+            self.writer.add_summary(summary_str, counter)
 
-                errD_fake = self.d_loss_fake.eval({self.real_data: batch_images}) #eval() expression given is treated as same as corresponding python dtype
-                errD_real = self.d_loss_real.eval({self.real_data: batch_images})
-                errG = self.g_loss.eval({self.real_data: batch_images})
+            errD_fake = self.d_loss_fake.eval({self.real_data: batch_images}) #eval() expression given is treated as same as corresponding python dtype
+            errD_real = self.d_loss_real.eval({self.real_data: batch_images})
+            errG = self.g_loss.eval({self.real_data: batch_images})
 
-                counter += 1
-                print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
-                    % (epoch, idx, batch_idxs,
-                        time.time() - start_time, errD_fake+errD_real, errG))
+            counter += 1
+            print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
+                % (epoch, idx, batch_idxs,
+                    time.time() - start_time, errD_fake+errD_real, errG))
 
-                if np.mod(counter, 100) == 1:
-                    self.sample_model(args.sample_dir, epoch, idx)
+            if np.mod(counter, 100) == 1:
+                self.sample_model(args.sample_dir, epoch, idx)
 
-                if np.mod(counter, 500) == 2:
-                    self.save(args.checkpoint_dir, counter)
+            if np.mod(counter, 500) == 2:
+                self.save(args.checkpoint_dir, counter)
+
 
     def discriminator(self, image, y=None, reuse=False):
 
@@ -218,9 +221,6 @@ class pix2pix(object):
 
             return tf.nn.sigmoid(h4), h4
 
-#######################
-#read from here (0725)#
-#######################
 
     def generator(self, image, y=None):
         with tf.variable_scope("generator") as scope:

@@ -43,7 +43,7 @@ tagfilepath="where/exists/tagfile.txt"
 check_training_dir="where/specgram/jpg/are/stored/"     #for checking mode collapse
 
 # gets list of tuples that has voice range with sec units
-def tag2range(wav_name):        #wavname contains .wav
+def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
     '''
     tagfile must be in form as follows
 
@@ -107,12 +107,17 @@ def get_spec_concat_array(voice_crop_arry, orig_crop_arry):
         spec_o=get_specgram(orig_crop_arry[i])
         concat_piece=np.concatenate((spec_v,spec_o), axis=1)
         spec_concat_list.append(concat_piece)
-#        zip_piece=np.array(list(zip(spec_v, spec_o)))
-#        spec_zipped_list.append(concat_piece)
     spec_concat_array=np.array(spec_concat_list)
     return spec_concat_array
 
-def get_shuffled_tr_ex_array(win_size,st_size, voicerange_list, orig_song_wav, voice_song_wav, tagfilename):
+
+def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice spec, 
+    split_result=np.split(spec_concat)
+    if select=="voice": res = split_result[0]
+    elif select=="ensemble": res = split_result[1]
+    return res
+
+def get_shuffled_tr_ex_array(win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
     tr_set_list=[]
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
@@ -121,15 +126,14 @@ def get_shuffled_tr_ex_array(win_size,st_size, voicerange_list, orig_song_wav, v
             rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
             rate_o, raw_o_wav=wavfile.read(songdir+wav)
 
-
-            voice_rangetuples_list=tag2range(wav)
+            voice_rangetuples_list=tag2range(wav,tagfilepath)
             v_songpiece_array=iterative_windower(win_size, st_size, raw_v_wav, voice_rangetuples_list)
             o_songpiece_array=iterative_windower(win_size, st_size, raw_o_wav, voice_rangetuples_list)
-            spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)
+            spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
 
     tr_ex_array=np.array(tr_set_list)
-    np.random.shuffle(tr_ex_array)
+    np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
     return tr_ex_array # thus array is shuffled
 
 
