@@ -4,7 +4,7 @@ import scipy.misc
 import numpy as np
 import preprocess as pr
 
-from model import pix2pix
+from new_model import pix2pix
 import tensorflow as tf
 
 parser = argparse.ArgumentParser(description='')
@@ -54,7 +54,7 @@ def main(_):
         # --phase arg determines where the data should be fetched from
         
         #check dimension
-        if  args.phase=='train': data=pr.get_shuffled_tr_ex_array("./"+args.dataset_name, tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
+        if  args.phase=='train': data=pr.get_shuffled_tr_ex_array("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
         elif args.phase=='test' : data=pr.get_test_vo_ex_array(args.test_dir, tagfilepath=args.tagfile_path)
         else: exit("--phase argument is only train or test")
         
