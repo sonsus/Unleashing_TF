@@ -143,12 +143,14 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
         else: 
-            rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
-            rate_o, raw_o_wav=wavfile.read(songdir+wav)
+            try:
+                rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
+                rate_o, raw_o_wav=wavfile.read(songdir+wav)
+            except: continue
 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
-            v_songpiece_array=iterative_windower(win_size, st_size, raw_v_wav, voice_rangetuples_list)
-            o_songpiece_array=iterative_windower(win_size, st_size, raw_o_wav, voice_rangetuples_list)
+            v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
+            o_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
 
@@ -164,9 +166,12 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
     #windowsize and stepsize for chopping wavs. not for specgram
     test_set_list=[]
     for wav in os.listdir(songdir):         #here, filename might be like: vo_somename.wav
-        rate, raw_v=wavfile.read(songdir+wav)         
+        try:
+            rate, raw_v=wavfile.read(songdir+wav)
+        except:
+            continue         
         voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
-        v_songpiece_array=iterative_windower(win_size, st_size, raw_v, voice_rangetuples_list)
+        v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
         spec_concat_array=get_spec_array(v_songpiece_array)               #this corresponds real AB
 
     test_set_array=np.array(test_set_list) 
