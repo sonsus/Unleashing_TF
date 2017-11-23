@@ -43,9 +43,7 @@ songdir="monowav/files/directory/"      #beware this must contain "/"
 tagfilepath="where/exists/tagfile.txt"  
 check_training_dir="where/specgram/jpg/are/stored/"     #for checking mode collapse
 
-# gets list of tuples that has voice range with sec units
-def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
-    '''
+'''
     tagfile must be in form as follows
 
     --------------tagfile.txt----------------
@@ -55,27 +53,35 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
     wavname2.wav 10-11,20-110
     -----------------------------------------
 
-    '''
+'''
+
+# gets list of tuples that has voice range with sec units
+def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
+    print("tag2range")
     namelen=len(wav_name[:-4])#for wav_name contains .wav at the end
     lines=[]
     with open(tagfilepath) as tagfile:
         lines+=tagfile.readlines()
+        print(lines)
+        print("         namelen=%s"%namelen)
     voice_rangetuples_list=[]
     for line in lines:
-        if line[:namelen]==wav_name:
-            dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   #for windows, \r\n
-                                                                # ["10-11","20-110"]
+        if line[:namelen]==wav_name[:-4]: 
+            dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   
+            print(dash_sep_list)
             for dash_sep in dash_sep_list:
                 a_range=list(dash_sep.split('-'))
-                for i in len(a_range):
+                for i in range(len(a_range)):
                     a_range[i]=int(a_range[i])    #[10,11]
                 voice_rangetuples_list.append(tuple(a_range))       
-
+    print("voice_rangetuples_list is")
+    print(voice_rangetuples_list)
     return voice_rangetuples_list
 
 
 def get_specgram(rate,filtered_wav):
-    #wav obj must underwent bandpass filter    
+    #wav obj must underwent bandpass filter
+    #print("get_specgram")    
     specgram = w2s.pretty_spectrogram(filtered_wav.astype('float64'), fft_size = w2s.fft_size, 
                                    step_size = w2s.step_size, log = True, thresh = w2s.spec_thresh)
     row=len(specgram) #this corresponds to time
@@ -85,9 +91,11 @@ def get_specgram(rate,filtered_wav):
         sys.exit("sth gone wrong with get_specgram in preprocess.py")
     else:
         specgram=specgram[:col] # specgram is 1024x1024 matrix
+    #print(specgram.shape)
     return specgram
 
 def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
+    print("iterative_windower")
     rate, raw_wav = wavfile.read(wav)
     filtered_wav = w2s.butter_bandpass_filter(raw_wav, w2s.lowcut, w2s.highcut, rate, order=1)
     
@@ -96,39 +104,43 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
     for tups in voice_rangetuples_list:
         v_starts=tups[0]
         v_ends=tups[1]
-        one_range=np.arange(v_starts,v_ends,st_size)  
+        one_range=np.arange(v_starts,v_ends,st_size)
+        print("onerange=%s"%one_range)  
         rangelist_set.append(one_range)
     rangelist_set=np.array(rangelist_set)
 
     #with rangelist_set, chop the filtered_wav
     songpiece_list=[]
     for one_range in rangelist_set:
-        start=int(one_range[0]*rate)
-        length=int(win_size*rate)              
-        if start+length>len(filtered_wav[0]): 
-            continue
-        else: 
-            songpiece=filtered_wav[start:(start+length)]
-            songpiece_list.append(songpiece)
+        for stpt in one_range:
+            if (filtered_wav.shape[0]-stpt*rate) < win_size*rate: continue
+            else: 
+                songpiece=filtered_wav[stpt*rate:(stpt+win_size)*rate]
+                songpiece_list.append(songpiece)
     songpiece_array=np.array(songpiece_list)
-    return songpiece_array
+    print(songpiece_array.shape)
+    return rate, songpiece_array
 
-def get_spec_concat_array(voice_crop_arry, orig_crop_arry):
+def get_spec_concat_array(rate_v, rate_o, voice_crop_arry, orig_crop_arry):
+    print("get_spec_concat_array")
     spec_concat_list=[]
     for i in range(len(voice_crop_arry)):
-        spec_v=get_specgram(voice_crop_arry[i])
-        spec_o=get_specgram(orig_crop_arry[i])
+        spec_v=get_specgram(rate_v, voice_crop_arry[i])
+        spec_o=get_specgram(rate_o, orig_crop_arry[i])
         concat_piece=np.concatenate((spec_v,spec_o), axis=1)
         spec_concat_list.append(concat_piece)
     spec_concat_array=np.array(spec_concat_list)
+    print(spec_concat_array.shape)
     return spec_concat_array
 
-def get_spec_array(voice_crop_arry):
+def get_spec_array(rate, voice_crop_arry):
+    print("get_spec_array")
     spec_vo_list=[]
     for i in len(voice_crop_arry):
-        spec_v=get_specgram(voice_crop_arry[i])
+        spec_v=get_specgram(rate, voice_crop_arry[i])
         spec_vo_list.append(spec_v)
     spec_array=np.array(spec_vo_list)
+    print(spec_array.shape)
     return spec_array
 
 def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice spec, 
@@ -139,23 +151,26 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
 
 def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
-    print(songdir)
+    print("get_shuffled_tr_ex_array")
     tr_set_list=[]
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
         else: 
-            rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)
-            rate_o, raw_o_wav=wavfile.read(songdir+wav)
-            
+            #rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)
+            #rate_o, raw_o_wav=wavfile.read(songdir+wav)
+            #print(raw_v_wav.shape)
+            #print(raw_o_wav.shape)
             voice_rangetuples_list=tag2range(wav,tagfilepath)
-            v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
-            o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
-            spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)               #this corresponds real AB
+            rate_v, v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
+            rate_o, o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
+            spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
             tr_set_list.append(spec_concat_array)
 
     tr_ex_array=np.array(tr_set_list)
+    print(tr_ex_array.shape)
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
+    print(tr_ex_array.shape)
     return tr_ex_array # thus array is shuffled
 
 
@@ -171,8 +186,8 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
         except:
             continue         
         voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
-        v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
-        spec_concat_array=get_spec_array(v_songpiece_array)               #this corresponds real AB
+        rate_v, v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
+        spec_concat_array=get_spec_array(rate_v, v_songpiece_array)               #this corresponds real AB
         test_set_list.append(spec_concat_array)
 
     test_set_array=np.array(test_set_list) 

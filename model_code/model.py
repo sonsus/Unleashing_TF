@@ -174,7 +174,8 @@ class pix2pix(object):
             #batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
             #batch = [load_data(batch_file) for batch_file in batch_files]
             if (self.is_grayscale):
-                batch_images = training_data.astype(np.float32)[:, :, :, None]
+                batch_images = training_data.astype(np.float32)[:, :, :, None] #too many indices here were
+                #batch_images = training_data.astype(np.float32)[:, :, None]
             else:
                 batch_images = training_data.astype(np.float32)
 
