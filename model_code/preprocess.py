@@ -152,6 +152,7 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
             o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
+            tr_set_list.append(spec_concat_array)
 
     tr_ex_array=np.array(tr_set_list)
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
@@ -172,6 +173,7 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
         voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
         v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
         spec_concat_array=get_spec_array(v_songpiece_array)               #this corresponds real AB
+        test_set_list.append(spec_concat_array)
 
     test_set_array=np.array(test_set_list) 
     return test_set_array # thus array is shuffled

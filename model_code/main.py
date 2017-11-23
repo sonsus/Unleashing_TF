@@ -69,6 +69,7 @@ def main(_):
 
 
         if args.phase == 'train':
+            print("train")
             model.train(args)
         else:
             model.test(args)
