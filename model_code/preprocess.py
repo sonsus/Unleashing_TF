@@ -127,7 +127,9 @@ def get_spec_concat_array(rate_v, rate_o, voice_crop_arry, orig_crop_arry):
     for i in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[i])
         spec_o=get_specgram(rate_o, orig_crop_arry[i])
-        concat_piece=np.concatenate((spec_v,spec_o), axis=1)
+        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
+        rs_spec_o=np.reshape(spec_o,(1024,1024,1))
+        concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=2)
         spec_concat_list.append(concat_piece)
     spec_concat_array=np.array(spec_concat_list)
     print(spec_concat_array.shape)
@@ -138,6 +140,7 @@ def get_spec_array(rate, voice_crop_arry):
     spec_vo_list=[]
     for i in len(voice_crop_arry):
         spec_v=get_specgram(rate, voice_crop_arry[i])
+        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
         spec_vo_list.append(spec_v)
     spec_array=np.array(spec_vo_list)
     print(spec_array.shape)
