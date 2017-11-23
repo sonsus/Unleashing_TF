@@ -42,8 +42,8 @@ import copy
 from scipy.io import wavfile
 from scipy.signal import butter, lfilter
 #import scipy.ndimage
-import imageio as img
-import cv2
+#import imageio as img
+#import cv2
 #here stands for converting wavfile objs by scipy.io.wavefile into spectrograms
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -253,6 +253,9 @@ print('Length in time (s): ', np.shape(data)[0]/float(rate))
 wav_spectrogram = pretty_spectrogram(data.astype('float64'), fft_size = fft_size, 
                                    step_size = step_size, log = True, thresh = spec_thresh)
 
+print(wav_spectrogram.shape)
+print(len(wav_spectrogram))
+
 
 #plotting it
 fig, ax = plt.subplots(nrows=1,ncols=1)
@@ -271,13 +274,13 @@ a= cv2.imread("C:/Users/SEONIL/Documents/imgio1.jpg",0)
 print("row of pic (time)", len(a))
 print("col of pic (#f-bin)", len(a[0]))#f**k yeaH I cracked this from bottom! so much primitive way I guess
 '''
-
+'''
 img.imwrite("C:/Users/SEONIL/Documents/imgio1.jpg",np.transpose(wav_spectrogram))
 a=cv2.imread("C:/Users/SEONIL/Documents/imgio1.jpg", 0)
 f0=a.copy()
 f0=cv2.flip(a, 0)
 cv2.imwrite("C:/Users/SEONIL/Documents/nowdone.png",f0)
-
+'''
 
 with open("C:/Users/SEONIL/Documents/logger.txt", "w") as logger:
     np.set_printoptions(threshold=np.nan)

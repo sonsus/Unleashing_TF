@@ -15,6 +15,7 @@ b_=np.concatenate((b,b1),axis=1)
 
 print(a)
 print(a1)
+print(a1[:,:,None])
 print(a_)
 
 s0=np.split(a_,2, axis=0)

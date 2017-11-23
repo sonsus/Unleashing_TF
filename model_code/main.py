@@ -2,17 +2,18 @@ import argparse
 import os
 import scipy.misc
 import numpy as np
+import preprocess as pr
 
 from model import pix2pix
 import tensorflow as tf
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset_name', dest='dataset_name', default='facades', help='name of the dataset')
+parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4', help='name of the dataset')
 parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=1, help='# images in batch')
 parser.add_argument('--train_size', dest='train_size', type=int, default=1e8, help='# images used to train')
-#parser.add_argument('--load_size', dest='load_size', type=int, default=286, help='scale images to this size')
-#parser.add_argument('--fine_size', dest='fine_size', type=int, default=256, help='then crop to this size')
+#\parser.add_argument('--load_size', dest='load_size', type=int, default=286, help='scale images to this size')
+parser.add_argument('--fine_size', dest='fine_size', type=int, default=1024, help='then crop to this size')
 #we dont crop
 parser.add_argument('--ngf', dest='ngf', type=int, default=64, help='# of gen filters in first conv layer')
 parser.add_argument('--ndf', dest='ndf', type=int, default=64, help='# of discri filters in first conv layer')
@@ -35,6 +36,7 @@ parser.add_argument('--serial_batches', dest='serial_batches', type=bool, defaul
 parser.add_argument('--serial_batch_iter', dest='serial_batch_iter', type=bool, default=True, help='iter into serial image list')
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
+parser.add_argument('--tagfile_path', dest='tagfile_path', default='./newtag.txt', help='voice timing tag file here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
 parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100.0, help='weight on L1 term in objective')
 
@@ -49,9 +51,22 @@ def main(_):
         os.makedirs(args.test_dir)
 
     with tf.Session() as sess:
-        model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
+        # --phase arg determines where the data should be fetched from
+        
+        #check dimension
+        if  args.phase=='train': data=pr.get_shuffled_tr_ex_array("./"+args.dataset_name, tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
+        elif args.phase=='test' : data=pr.get_test_vo_ex_array(args.test_dir, tagfilepath=args.tagfile_path)
+        else: exit("--phase argument is only train or test")
+        
+        img_x_len=whole_data.shape[-1]
+        img_y_len=whole_data.shape[-2]
+        print(img_x_len==img_y_len)
+        print(img_x_len)#check it whether or not it is 1024
+
+        model = pix2pix(sess, data, img_size=args.fine_size, batch_size=args.batch_size,
                         output_size=args.fine_size, dataset_name=args.dataset_name,
-                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir)
+                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir, test_dir=args.test_dir)
+
 
         if args.phase == 'train':
             model.train(args)

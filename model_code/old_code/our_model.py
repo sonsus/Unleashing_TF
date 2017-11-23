@@ -12,10 +12,10 @@ from utils import *
 import preprocess as pr
 
 class pix2pix(object):
-    def __init__(self, sess, image_size=256,
+    def __init__(self, sess, img_x_length, img_y_length,
                  batch_size=1, sample_size=1, output_size=256,
                  gf_dim=64, df_dim=64, L1_lambda=100,
-                 input_c_dim=3, output_c_dim=3, dataset_name='facades',
+                 input_c_dim=3, output_c_dim=3, dataset_name='bolbbalgan4',
                  checkpoint_dir=None, sample_dir=None):
         """
 
@@ -28,18 +28,20 @@ class pix2pix(object):
             input_c_dim: (optional) Dimension of input image color. For grayscale input, set to 1. [3]
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
+
         self.sess = sess
-        self.is_grayscale = (input_c_dim == 1)
+\#        self.is_grayscale = (input_c_dim == 1)
         self.batch_size = batch_size
-        self.image_size = image_size
-        self.sample_size = sample_size
-        self.output_size = output_size
+\        self.img_x_len= img_x_len
+\        self.img_y_len= img_y_len 
+        self.sample_size = sample_size#
+        self.output_size = output_size#
 
         self.gf_dim = gf_dim
         self.df_dim = df_dim
 
-        self.input_c_dim = input_c_dim
-        self.output_c_dim = output_c_dim
+#        self.input_c_dim = input_c_dim
+#        self.output_c_dim = output_c_dim
 
         self.L1_lambda = L1_lambda
 
@@ -68,24 +70,21 @@ class pix2pix(object):
         self.checkpoint_dir = checkpoint_dir
         self.build_model()
 
-\real_A and real_B from preprocess.py
-\also voicepart need to be splitted for making fake_AB
 
     def build_model(self):
-        self.real_data = tf.placeholder(tf.float32,
-                                        [self.batch_size, None, None,
-                                         self.input_c_dim + self.output_c_dim],
-                                        name='real_A_and_B_images')
+        self.real_data = tf.placeholder(tf.float32, [self.batch_size, None, None], name='specAspecBconcat_list')
 
         #self.real_B = self.real_data[:, :, :, :self.input_c_dim]
         #self.real_A = self.real_data[:, :, :, self.input_c_dim:self.input_c_dim + self.output_c_dim]
-        self.real_A = self.real_data[:, :, :, 0]
-        self.real_B = self.real_data[:, :, :, 1]
+        
+        vec_split2indiv_spec=np.vectorize(pr.split2indiv_spec)#####
+        self.real_A = self.vec_split2indiv_spec(real_data, "voice")
+        self.real_B = self.vec_split2indiv_spec(read_data, "ensemble")
 
         self.fake_B = self.generator(self.real_A)
 
-        self.real_AB = tf.concat([self.real_A, self.real_B], 3)
-        self.fake_AB = tf.concat([self.real_A, self.fake_B], 3)# why 3?
+        self.real_AB = self.real_data
+        self.fake_AB = tf.concat([self.real_A, self.fake_B], 3)
         self.D, self.D_logits = self.discriminator(self.real_AB, reuse=False)
         self.D_, self.D_logits_ = self.discriminator(self.fake_AB, reuse=True)
 
@@ -409,16 +408,18 @@ class pix2pix(object):
         print("Loading testing images ...")
 
 
-        sample = [load_data(sample_file, is_test=True) for sample_file in sample_files]
+        sample=get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepath=tagfilepath)
+#        sample = [load_data(sample_file, is_test=True) for sample_file in sample_files]
 #        if (self.is_grayscale):
-        sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
+#        sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
 #        else:
 #            sample_images = np.array(sample).astype(np.float32)
-
-        sample_images = [sample_images[i:i+self.batch_size]
-                         for i in xrange(0, len(sample_images), self.batch_size)]
-        sample_images = np.array(sample_images)
         print(sample_images.shape)
+        with open("datastat.txt", "w") as file:
+            file.write("winsize={winsize} \nstsize={stsize} \n x_length={xlen} \ny_length={ylen}".format(winsize=pr.win_size, \
+                                                                                                        stsize=pr.st_size, \
+                                                                                                        xlen=self.img_x_len, \
+                                                                                                        ylen=self.img_y_len))
 
         start_time = time.time()
         if self.load(self.checkpoint_dir):

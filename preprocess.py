@@ -28,6 +28,7 @@ import numpy as np
 import matplotlib.pyplot as plt # for fig saving --> mode collapse check
 import wav2spec as w2s # for spectrogram conversion codes
 from scipy.io import wavfile
+import sys
 # import separation as sep # for voice separation of the original song
                 #no need to do this. just prep voice separated files before.
 
@@ -48,22 +49,27 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
     tagfile must be in form as follows
 
     --------------tagfile.txt----------------
-    wavname1.wav 10-11,20-119,150-159
+    wavname1.wav 10-11,20-50
+    wavname1_1.wav 0-50
+    wavname1_2.wav 0-10
     wavname2.wav 10-11,20-110
     -----------------------------------------
 
     '''
-    namelen=len(wav_name)
+    namelen=len(wav_name[:-4])#for wav_name contains .wav at the end
     lines=[]
     with open(tagfilepath) as tagfile:
         lines+=tagfile.readlines()
     voice_rangetuples_list=[]
     for line in lines:
         if line[:namelen]==wav_name:
-            dash_sep_list=line[namelen+1:].rstrip("\n").split(',')   #for windows, \r\n
+            dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   #for windows, \r\n
+                                                                # ["10-11","20-110"]
             for dash_sep in dash_sep_list:
-                a_range=tuple(dash_sep.split('-'))
-                voice_rangetuples_list.append(a_range)       
+                a_range=list(dash_sep.split('-'))
+                for i in len(a_range):
+                    a_range[i]=int(a_range[i])    #[10,11]
+                voice_rangetuples_list.append(tuple(a_range))       
 
     return voice_rangetuples_list
 
@@ -72,6 +78,13 @@ def get_specgram(rate,filtered_wav):
     #wav obj must underwent bandpass filter    
     specgram = w2s.pretty_spectrogram(filtered_wav.astype('float64'), fft_size = w2s.fft_size, 
                                    step_size = w2s.step_size, log = True, thresh = w2s.spec_thresh)
+    row=len(specgram) #this corresponds to time
+    col=len(specgram[0])
+    if row<col:
+        print("\n\n\nNO!\n\n\n")
+        sys.exit("sth gone wrong with get_specgram in preprocess.py")
+    else:
+        specgram=specgram[:col] # specgram is 1024x1024 matrix
     return specgram
 
 def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
@@ -110,6 +123,13 @@ def get_spec_concat_array(voice_crop_arry, orig_crop_arry):
     spec_concat_array=np.array(spec_concat_list)
     return spec_concat_array
 
+def get_spec_array(voice_crop_arry):
+    spec_vo_list=[]
+    for i in len(voice_crop_arry):
+        spec_v=get_specgram(voice_crop_arry[i])
+        spec_vo_list.append(spec_v)
+    spec_array=np.array(spec_vo_list)
+    return spec_array
 
 def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice spec, 
     split_result=np.split(spec_concat)
@@ -117,7 +137,7 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
     elif select=="ensemble": res = split_result[1]
     return res
 
-def get_shuffled_tr_ex_array(win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
+def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
     tr_set_list=[]
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
@@ -135,6 +155,22 @@ def get_shuffled_tr_ex_array(win_size=win_size,st_size=st_size,tagfilepath=tagfi
     tr_ex_array=np.array(tr_set_list)
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
     return tr_ex_array # thus array is shuffled
+
+
+#when testing, just voice files to be tested in the directory
+#not enough time, thus just copy and paste of get_shuffled_tr_ex_array()
+#recommend putting only one file for sake of your mentality
+def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepath=tagfilepath):
+    #windowsize and stepsize for chopping wavs. not for specgram
+    test_set_list=[]
+    for wav in os.listdir(songdir):         #here, filename might be like: vo_somename.wav
+        rate, raw_v=wavfile.read(songdir+wav)         
+        voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
+        v_songpiece_array=iterative_windower(win_size, st_size, raw_v, voice_rangetuples_list)
+        spec_concat_array=get_spec_array(v_songpiece_array)               #this corresponds real AB
+
+    test_set_array=np.array(test_set_list) 
+    return test_set_array # thus array is shuffled
 
 
 ####### additional but might be quite critical utils #######
