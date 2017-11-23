@@ -4,7 +4,7 @@ import scipy.misc
 import numpy as np
 import preprocess as pr
 
-from new_model import pix2pix
+from model import pix2pix
 import tensorflow as tf
 
 parser = argparse.ArgumentParser(description='')
@@ -58,12 +58,12 @@ def main(_):
         elif args.phase=='test' : data=pr.get_test_vo_ex_array(args.test_dir, tagfilepath=args.tagfile_path)
         else: exit("--phase argument is only train or test")
         
-        img_x_len=whole_data.shape[-1]
-        img_y_len=whole_data.shape[-2]
-        print(img_x_len==img_y_len)
-        print(img_x_len)#check it whether or not it is 1024
+        datashape=data.shape
+        with open("dataarrayshape.txt","w") as log:
+            log.write(str(data))
+            #check it whether or not it is 1024
 
-        model = pix2pix(sess, data, img_size=args.fine_size, batch_size=args.batch_size,
+        model = pix2pix(sess, data, image_size=args.fine_size, batch_size=args.batch_size,
                         output_size=args.fine_size, dataset_name=args.dataset_name,
                         checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir, test_dir=args.test_dir)
 
@@ -74,4 +74,6 @@ def main(_):
             model.test(args)
 
 if __name__ == '__main__':
+    print(args.dataset_name)
     tf.app.run()
+    

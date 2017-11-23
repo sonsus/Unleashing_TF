@@ -28,6 +28,7 @@ class pix2pix(object):
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
         self.sess = sess
+        self.data = data
         self.is_grayscale = (input_c_dim == 1)
         self.batch_size = batch_size
         self.image_size = image_size
@@ -114,7 +115,7 @@ class pix2pix(object):
 
 
     def load_random_samples(self):
-        sample=data
+        sample=self.data
 #        data = np.random.choice(glob('./datasets/{}/val/*.jpg'.format(self.dataset_name)), self.batch_size)
 #        sample = [load_data(sample_file) for sample_file in data]
 
@@ -161,7 +162,7 @@ class pix2pix(object):
             print(" [!] Load failed...")
 
 
-        training_data=data
+        training_data=self.data
         batch_idxs= len(training_data)//self.batch_size
 
 #        for epoch in xrange(args.epoch):
@@ -420,7 +421,7 @@ class pix2pix(object):
                                                                       #zip(*zip(list1,list2))=x,y --> (list(x)==list1, list(y)==list2) is same as (True, True)
         # load testing input
         print(" received voice only nparray for in test array from main.py? %r"%(data==pr.get_test_vo_ex_array(self.test_dir, tagfilepath=self.tagfile_path)))
-        sample = data
+        sample = self.data
 
         if (self.is_grayscale):
             sample_images = np.array(sample).astype(np.float32)[:, :, :, None]

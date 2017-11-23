@@ -115,7 +115,7 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
 
 def get_spec_concat_array(voice_crop_arry, orig_crop_arry):
     spec_concat_list=[]
-    for i in len(voice_crop_arry):
+    for i in range(len(voice_crop_arry)):
         spec_v=get_specgram(voice_crop_arry[i])
         spec_o=get_specgram(orig_crop_arry[i])
         concat_piece=np.concatenate((spec_v,spec_o), axis=1)
@@ -139,18 +139,17 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
 
 def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
+    print(songdir)
     tr_set_list=[]
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
         else: 
-            try:
-                rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)         
-                rate_o, raw_o_wav=wavfile.read(songdir+wav)
-            except: continue
-
+            rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)
+            rate_o, raw_o_wav=wavfile.read(songdir+wav)
+            
             voice_rangetuples_list=tag2range(wav,tagfilepath)
-            v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
-            o_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
+            v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
+            o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
 
