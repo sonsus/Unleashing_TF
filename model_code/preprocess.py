@@ -155,7 +155,8 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
 def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
     print("get_shuffled_tr_ex_array")
-    tr_set_list=[]
+    counter=0
+    tr_ex_array=None
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
         else: 
@@ -168,11 +169,11 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
             rate_o, o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
-            tr_set_list.append(spec_concat_array)
-
-    tr_ex_array=np.array(tr_set_list)
-    print(tr_ex_array.shape)
+            if counter==0: tr_ex_array=spec_concat_array
+            else: tr_ex_array=np.concatenate((array,spec_concat_array),axis=0)
+            counter+=1
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
+    print("resulted imageset is,")
     print(tr_ex_array.shape)
     return tr_ex_array # thus array is shuffled
 
@@ -182,18 +183,18 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
 #recommend putting only one file for sake of your mentality
 def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
-    test_set_list=[]
+    counter=0
+    test_set_array=None
     for wav in os.listdir(songdir):         #here, filename might be like: vo_somename.wav
-        try:
-            rate, raw_v=wavfile.read(songdir+wav)
-        except:
-            continue         
+        rate, raw_v=wavfile.read(songdir+wav)
         voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
         rate_v, v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
-        spec_concat_array=get_spec_array(rate_v, v_songpiece_array)               #this corresponds real AB
-        test_set_list.append(spec_concat_array)
-
-    test_set_array=np.array(test_set_list) 
+        spec_v_array=get_spec_array(rate_v, v_songpiece_array)               #this corresponds real AB
+        if counter==0: test_set_array=spec_v_array
+        else: tr_ex_array=np.concatenate((test_set_array,spec_v_array),axis=0)
+        counter+=1
+    print("resulted testset is")
+    print(test_set_array.shape)
     return test_set_array # thus array is shuffled
 
 
@@ -201,8 +202,10 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
 
 #will be used for mode collapse checking
 def write_specgram_jpg(specgram, jpgname):   #jpgname with .jpg
+#specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
-    cax = ax.matshow(np.transpose(wav_spectrogram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
+    rs_specgram=np.reshape(specgram, (1024,2048))
+    cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
     plt.title('upper: voice only, lower: ensemble')
     plt.savefig(check_training_dir+jpgname,bbox_inches="tight",pad_inches=0)
@@ -210,6 +213,7 @@ def write_specgram_jpg(specgram, jpgname):   #jpgname with .jpg
 
 #takes too much time running. must be used only for testing
 def recover_audio(pathandwavname, specgram):
+    rs_specgram=np.reshape(specgram, (1024,1024))
     recovered=w2s.invert_pretty_spectrogram(specgram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
     #recovered/=max(recovered_audio_orig)

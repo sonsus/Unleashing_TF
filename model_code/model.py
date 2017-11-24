@@ -450,5 +450,5 @@ class pix2pix(object):
             save_images(samples, [self.batch_size, 1],
                         './{}/test_{:04d}.png'.format(args.test_dir, idx))
             
-            recover_audio(pathandwavname='./{}/test_{:04d}.wav'.format(args.test_dir, idx), specgram=tf.reshape(sample_image, [1024,1024]))
-            pr.write_specgram_jpg(specgram=tf.reshape(sample_image, [1024,1024]), jpgname='./{}/test_{:04d}.jpg'.format(args.test_dir, idx))
+            recover_audio(pathandwavname='./{}/test_{:04d}.wav'.format(args.test_dir, idx), specgram=sample_image)
+            pr.write_specgram_jpg(specgram=sample_image, jpgname='./{}/test_{:04d}.jpg'.format(args.test_dir, idx))
