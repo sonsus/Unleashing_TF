@@ -62,20 +62,20 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
     lines=[]
     with open(tagfilepath) as tagfile:
         lines+=tagfile.readlines()
-        print(lines)
-        print("         namelen=%s"%namelen)
+#        print(lines)
+#        print("         namelen=%s"%namelen)
     voice_rangetuples_list=[]
     for line in lines:
         if line[:namelen]==wav_name[:-4]: 
             dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   
-            print(dash_sep_list)
+#            print(dash_sep_list)
             for dash_sep in dash_sep_list:
                 a_range=list(dash_sep.split('-'))
                 for i in range(len(a_range)):
                     a_range[i]=int(a_range[i])    #[10,11]
                 voice_rangetuples_list.append(tuple(a_range))       
-    print("voice_rangetuples_list is")
-    print(voice_rangetuples_list)
+#    print("voice_rangetuples_list is")
+#    print(voice_rangetuples_list)
     return voice_rangetuples_list
 
 
@@ -170,7 +170,7 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
             spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
             if counter==0: tr_ex_array=spec_concat_array
-            else: tr_ex_array=np.concatenate((array,spec_concat_array),axis=0)
+            else: tr_ex_array=np.concatenate((tr_ex_array,spec_concat_array),axis=0)
             counter+=1
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
     print("resulted imageset is,")
