@@ -170,7 +170,7 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
             spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
             np.random.shuffle(spec_concat_array)
             if counter==0: tr_ex_array=spec_concat_array
-            else: tr_ex_array=np.concatenate((array,spec_concat_array),axis=0)
+            else: tr_ex_array=np.concatenate((tr_ex_array,spec_concat_array),axis=0)
             counter+=1
     np.random.shuffle(tr_ex_array) # not sure shuffle here or picking it randomly later 
     print("resulted imageset is,")
