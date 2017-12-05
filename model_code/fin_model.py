@@ -11,7 +11,7 @@ from ops import *
 from utils import *
 
 class pix2pix(object):
-    def __init__(self, sess, data, image_size=1024,
+    def __init__(self, sess, image_size=1024,
                  batch_size=1, sample_size=1, output_size=1024,
                  gf_dim=64, df_dim=64, L1_lambda=100,
                  input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
@@ -28,7 +28,7 @@ class pix2pix(object):
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
         self.sess = sess
-        self.data = data
+#        self.data = data
         self.is_grayscale = (input_c_dim == 1)
         self.batch_size = batch_size
         self.image_size = image_size
