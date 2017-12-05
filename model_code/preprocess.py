@@ -221,6 +221,19 @@ def recover_audio(pathandwavname, specgram):
     wavfile.write(pathandwavname, 44100, recovered)
 
 
+\under construction
+#save processed array of shape (?,1024,1024,2) as npy binary file for calling it.
+def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utilize load function with ease
+    with open("{}.npy".format(name_counter), "wb"):
+        np.save(f,nparray)
+
+
+\when loading
+def loader()
+    res=None
+    with open():
+        res=np.load(f)
+    return res
 
 
 
