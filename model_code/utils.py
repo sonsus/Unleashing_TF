@@ -16,7 +16,13 @@ get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 
 # -----------------------------
 # new added functions for pix2pix
+def load_npy(npypath):
+    res=None
+    with open(npypath, "rb") as f:
+        res=np.load(f)
+    return res
 
+'''
 def load_data(image_path, flip=True, is_test=False):
     img_A, img_B = load_image(image_path)
     img_A, img_B = preprocess_A_and_B(img_A, img_B, flip=flip, is_test=is_test)
@@ -27,7 +33,7 @@ def load_data(image_path, flip=True, is_test=False):
     img_AB = np.concatenate((img_A, img_B), axis=2)
     # img_AB shape: (fine_size, fine_size, input_c_dim + output_c_dim)
     return img_AB
-
+'''
 def load_image(image_path):
     input_img = imread(image_path)
     w = int(input_img.shape[1])
@@ -64,7 +70,7 @@ def get_image(image_path, image_size, is_crop=True, resize_w=64, is_grayscale = 
 
 def save_images(images, size, image_path):
     return imsave(inverse_transform(images), size, image_path)
-
+    
 def imread(path, is_grayscale = False):
     if (is_grayscale):
         return scipy.misc.imread(path, flatten = True).astype(np.float)

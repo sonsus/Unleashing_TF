@@ -236,14 +236,14 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
 ####### additional but might be quite critical utils #######
 
 #will be used for mode collapse checking
-def write_specgram_jpg(specgram, jpgname):   #jpgname with .jpg
+def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
     rs_specgram=np.reshape(specgram, (1024,2048))
     cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
     plt.title('upper: voice only, lower: ensemble')
-    plt.savefig(check_training_dir+jpgname,bbox_inches="tight",pad_inches=0)
+    plt.savefig(check_training_dir+imgname,bbox_inches="tight",pad_inches=0)
 
 
 #takes too much time running. must be used only for testing
@@ -261,11 +261,11 @@ def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utiliz
     with open("{a}.npy".format(a=name_counter), "wb") as npy:
         np.save(npy,nparray)
 
-
+'''moved to utils.py as load_npy()
 def loader(filedir):
     res=None
     with open(filedir, "rb") as f:
         res=np.load(f)
     return res
-
+'''
 
