@@ -152,6 +152,29 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
     elif select=="ensemble": res = split_result[1]
     return res
 
+def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utilize load function with ease
+    with open("{a}.npy".format(a=name_counter), "wb") as npy:
+        np.save(npy,nparray)
+
+def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
+    #windowsize and stepsize for chopping wavs. not for specgram
+    print("get_shuffled_tr_ex_array")
+    counter=0
+    for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
+        if wav[0:3]=='vo_': continue
+        else: 
+            #rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)
+            #rate_o, raw_o_wav=wavfile.read(songdir+wav)
+            #print(raw_v_wav.shape)
+            #print(raw_o_wav.shape)
+            voice_rangetuples_list=tag2range(wav,tagfilepath)
+            rate_v, v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
+            rate_o, o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
+            spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
+            save_data2npy(name_counter=counter, nparray=spec_concat_array, save_dir=songdir)
+            counter+=1 
+
+'''memory does not allow to use this function
 def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
     print("get_shuffled_tr_ex_array")
@@ -168,7 +191,6 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
             rate_v, v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
             rate_o, o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
             spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
-            np.random.shuffle(spec_concat_array)
             if counter==0: tr_ex_array=spec_concat_array
             else: tr_ex_array=np.concatenate((tr_ex_array,spec_concat_array),axis=0)
             counter+=1
@@ -176,8 +198,21 @@ def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilep
     print("resulted imageset is,")
     print(tr_ex_array.shape)
     return tr_ex_array # thus array is shuffled
+'''
 
+def generate_v_only_npyfile(songdir, win_size=win_size,st_size=st_size*2,tagfilepath=tagfilepath):
+    #this function is almost twin with generate_concat_npyfile
+    #songdir=testdir with only vo_somename.wav files 
+    counter=0
+    for wav in os.listdir(songdir):         
+        rate, raw_v=wavfile.read(songdir+wav)
+        voice_rangetuples_list=tag2range(wav[3:],tagfilepath)
+        rate_v, v_songpiece_array=iterative_windower(win_size, st_size, wav, voice_rangetuples_list)
+        spec_v_array=get_spec_array(rate_v, v_songpiece_array)               #this corresponds real AB
+        save_data2npy(name_counter=counter, nparray=spec_v_array, save_dir=songdir)
+        counter+=1
 
+'''memory didnt allowed it!
 #when testing, just voice files to be tested in the directory
 #not enough time, thus just copy and paste of get_shuffled_tr_ex_array()
 #recommend putting only one file for sake of your mentality
@@ -196,7 +231,7 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
     print("resulted testset is")
     print(test_set_array.shape)
     return test_set_array # thus array is shuffled
-
+'''
 
 ####### additional but might be quite critical utils #######
 
@@ -221,21 +256,16 @@ def recover_audio(pathandwavname, specgram):
     wavfile.write(pathandwavname, 44100, recovered)
 
 
-\under construction
 #save processed array of shape (?,1024,1024,2) as npy binary file for calling it.
 def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utilize load function with ease
-    with open("{}.npy".format(name_counter), "wb"):
-        np.save(f,nparray)
+    with open("{a}.npy".format(a=name_counter), "wb") as npy:
+        np.save(npy,nparray)
 
 
-\when loading
-def loader()
+def loader(filedir):
     res=None
-    with open():
+    with open(filedir, "rb") as f:
         res=np.load(f)
     return res
-
-
-
 
 

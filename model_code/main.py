@@ -53,17 +53,12 @@ def main(_):
     with tf.Session() as sess:
         # --phase arg determines where the data should be fetched from
 
-''' loading training data on the memory: makes system explode        
-        #check dimension
-        if  args.phase=='train': data=pr.get_shuffled_tr_ex_array("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
-        elif args.phase=='test' : data=pr.get_test_vo_ex_array(args.test_dir, tagfilepath=args.tagfile_path)
-        else: exit("--phase argument is only train or test")
         
-        datashape=data.shape
-        with open("dataarrayshape.txt","w") as log:
-            log.write(str(data))
-            #check it whether or not it is 1024
-'''
+        #check dimension
+        if  args.phase=='train': pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
+        elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, tagfilepath=args.tagfile_path)
+        else: exit("--phase argument is only train or test")
+
         model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
                         output_size=args.fine_size, dataset_name=args.dataset_name,
                         checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir, test_dir=args.test_dir)
