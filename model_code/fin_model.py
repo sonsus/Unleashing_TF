@@ -162,7 +162,7 @@ class pix2pix(object):
             print(" [!] Load failed...")
 
         for epoch in range(args.epoch):
-            data = glob("./{dataset}}/*.npy".format(dataset=self.dataset_name))
+            data = glob("./{dataset}/*.npy".format(dataset=self.dataset_name))
             batch_idxs = min(len(data), args.train_size) // self.batch_size
 
             for idx in range(0, batch_idxs):
@@ -203,54 +203,6 @@ class pix2pix(object):
                 if np.mod(counter, 500) == 2:
                     self.save(args.checkpoint_dir, counter)
 
-'''
-        training_data=self.data
-        batch_idxs= len(training_data)//self.batch_size
-
-        for epoch in range(args.epoch):
-            data = glob('./datasets/{}/train/*.jpg'.format(self.dataset_name))
-            np.random.shuffle(data)
-            batch_idxs = min(len(data), args.train_size) // self.batch_size     # // : floor division
-
-        for idx in range(batch_idxs):
-            batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
-            batch = [load_npy(batch_file) for batch_file in batch_files]
-            if (self.is_grayscale):
-                batch_images = training_data.astype(np.float32)[:, :, :, None] #too many indices here were
-                #batch_images = training_data.astype(np.float32)[:, :, None]
-            else:
-                batch_images = training_data.astype(np.float32)
-
-            # Update D network
-            _, summary_str = self.sess.run([d_optim, self.d_sum],
-                                           feed_dict={ self.real_data: batch_images })
-            self.writer.add_summary(summary_str, counter)
-
-            # Update G network
-            _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                           feed_dict={ self.real_data: batch_images })
-            self.writer.add_summary(summary_str, counter)
-
-            # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
-            _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                           feed_dict={ self.real_data: batch_images })
-            self.writer.add_summary(summary_str, counter)
-
-            errD_fake = self.d_loss_fake.eval({self.real_data: batch_images}) #eval() expression given is treated as same as corresponding python dtype
-            errD_real = self.d_loss_real.eval({self.real_data: batch_images})
-            errG = self.g_loss.eval({self.real_data: batch_images})
-
-            counter += 1
-            print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
-                % (epoch, idx, batch_idxs,
-                    time.time() - start_time, errD_fake+errD_real, errG))
-
-            if np.mod(counter, 100) == 1:
-                self.sample_model(args.sample_dir, epoch, idx)
-
-            if np.mod(counter, 500) == 2:
-                self.save(args.checkpoint_dir, counter)
-'''
     def discriminator(self, image, y=None, reuse=False):
 
         with tf.variable_scope("discriminator") as scope:
@@ -500,8 +452,8 @@ class pix2pix(object):
                 self.fake_B_sample,
                 feed_dict={self.real_data: sample_image}
             )
-            #save_images(samples, [self.batch_size, 1],
-            #            './{}/test_{:04d}.png'.format(args.test_dir, idx))
+            save_images(samples, [self.batch_size, 1],
+                        './{}/test_{:04d}.png'.format(args.test_dir, idx))
             
             recover_audio(pathandwavname='./{}/test_{:04d}.wav'.format(args.test_dir, idx), specgram=sample_image)
-            pr.write_specgram_img(specgram=sample_image, imgname='./{}/test_{:04d}.png'.format(args.test_dir, idx))
+            #pr.write_specgram_img(specgram=sample_image, imgname='./{}/test_{:04d}.png'.format(args.test_dir, idx))

@@ -34,7 +34,6 @@ import sys
 
 
 ####parameters#####
-
 #windowing, step size for chopping the specgram.
 win_size=4
 st_size=1           #also float available
@@ -158,7 +157,7 @@ def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utiliz
 
 def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
-    print("get_shuffled_tr_ex_array")
+    print("generate_concat_npyfile")
     counter=0
     for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
@@ -240,16 +239,17 @@ def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
     rs_specgram=np.reshape(specgram, (1024,2048))
-    cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
+    cax = ax.matshow(np.transpose(rs_specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
     plt.title('upper: voice only, lower: ensemble')
-    plt.savefig(check_training_dir+imgname,bbox_inches="tight",pad_inches=0)
+    plt.savefig(imgname,bbox_inches="tight",pad_inches=0)
+    #plt.savefig(check_training_dir+imgname,bbox_inches="tight",pad_inches=0)
 
 
 #takes too much time running. must be used only for testing
 def recover_audio(pathandwavname, specgram):
     rs_specgram=np.reshape(specgram, (1024,1024))
-    recovered=w2s.invert_pretty_spectrogram(specgram, fft_size = fft_size,
+    recovered=w2s.invert_pretty_spectrogram(rs_specgram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
     #recovered/=max(recovered_audio_orig)
     #recovered*=3                                       #normalize --> amplify.
@@ -258,7 +258,7 @@ def recover_audio(pathandwavname, specgram):
 
 #save processed array of shape (?,1024,1024,2) as npy binary file for calling it.
 def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utilize load function with ease
-    with open("{a}.npy".format(a=name_counter), "wb") as npy:
+    with open("{path}{a}.npy".format(path=save_dir, a=name_counter), "wb") as npy:
         np.save(npy,nparray)
 
 '''moved to utils.py as load_npy()

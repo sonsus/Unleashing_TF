@@ -3,7 +3,6 @@ import os
 import scipy.misc
 import numpy as np
 import preprocess as pr
-
 from fin_model import pix2pix
 import tensorflow as tf
 
