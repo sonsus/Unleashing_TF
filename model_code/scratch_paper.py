@@ -1,3 +1,19 @@
+from numpy import *
+
+a=array([[ 0,  1,  2,  3],
+       [10, 11, 12, 13],
+       [20, 21, 22, 23],
+       [30, 31, 32, 33],
+       [40, 41, 42, 43]])
+a_=a[:,:]
+a__=a[:,:,None,None]
+print(a__)
+print(a_)
+
+print("a_.shape={s}".format(s=a_.shape))
+print("a__.shape={s}".format(s=a__.shape))
+
+'''
 def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no, savedir):
     for piece_no in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[i])
@@ -27,7 +43,7 @@ def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utiliz
 
 
 
-'''
+
 from numpy import *
 
 a=array([[ 0,  1,  2,  3],
@@ -53,3 +69,4 @@ print("concat over axis 3? N.O.")
 for i in range(3):    
     temp=concatenate((a,b),axis=i)
     print(temp)
+'''

@@ -29,7 +29,6 @@ class pix2pix(object):
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
         self.sess = sess
-#        self.data = data
         self.is_grayscale = (input_c_dim == 1)
         self.batch_size = batch_size
         self.image_size = image_size
@@ -120,8 +119,8 @@ class pix2pix(object):
         sample = [load_npy(sample_file) for sample_file in data]
 
         if (self.is_grayscale):
-            sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
-            print("going right")
+            sample_images = np.array(sample).astype(np.float32)[:, :, :, None] #first index is for sample list above
+            print("\ngrayscale loaded!\n")
         else:
             sample_images = np.array(sample).astype(np.float32)
             sys.exit("going wrong, reading as rgb: exit")

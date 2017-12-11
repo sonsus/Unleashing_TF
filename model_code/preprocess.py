@@ -126,7 +126,8 @@ def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no
         spec_o=get_specgram(rate_o, orig_crop_arry[i])
         rs_spec_v=np.reshape(spec_v,(1024,1024,1))
         rs_spec_o=np.reshape(spec_o,(1024,1024,1))
-        concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1)
+        concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
+        #concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1) #when need to visualize, axis=1 HOW WEIRD?!
         save_data2npy(name_counter=song_no+piece_no,nparray=concat_piece,savedir=savedir)
         # first piece of the first song will be named as 10000(song#)+1(piece#)==10001.npy
 '''no need to pass the array itself. saved as npy'''
