@@ -120,36 +120,46 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
     print(songpiece_array.shape)
     return rate, songpiece_array
 
-def get_spec_concat_array(rate_v, rate_o, voice_crop_arry, orig_crop_arry):
-    print("get_spec_concat_array")
-    spec_concat_list=[]
-    for i in range(len(voice_crop_arry)):
+def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no, savedir):
+    for piece_no in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[i])
         spec_o=get_specgram(rate_o, orig_crop_arry[i])
         rs_spec_v=np.reshape(spec_v,(1024,1024,1))
         rs_spec_o=np.reshape(spec_o,(1024,1024,1))
         concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1)
-        spec_concat_list.append(concat_piece)
-    spec_concat_array=np.array(spec_concat_list)
-    print(spec_concat_array.shape)
-    return spec_concat_array
+        save_data2npy(name_counter=song_no+piece_no,nparray=concat_piece,savedir=savedir)
+        # first piece of the first song will be named as 10000(song#)+1(piece#)==10001.npy
+'''no need to pass the array itself. saved as npy'''
+#    spec_concat_array=np.array(spec_concat_list)
+#    print(spec_concat_array.shape)
+#    return spec_concat_array
 
-def get_spec_array(rate, voice_crop_arry):
-    print("get_spec_array")
-    spec_vo_list=[]
-    for i in len(voice_crop_arry):
-        spec_v=get_specgram(rate, voice_crop_arry[i])
+
+def get_spec_array(rate, voice_crop_arry, song_no, savedir):
+    for piece_no in range(len(voice_crop_arry)):
+        spec_v=get_specgram(rate_v, voice_crop_arry[i])
         rs_spec_v=np.reshape(spec_v,(1024,1024,1))
-        spec_vo_list.append(spec_v)
-    spec_array=np.array(spec_vo_list)
-    print(spec_array.shape)
-    return spec_array
+        save_data2npy(name_counter=song_no+piece_no,nparray=concat_piece,savedir=savedir)
+
+#    print("get_spec_array")
+#    spec_vo_list=[]
+#    for i in len(voice_crop_arry):
+#        spec_v=get_specgram(rate, voice_crop_arry[i])
+#        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
+#        spec_vo_list.append(spec_v)
+#    spec_array=np.array(spec_vo_list)
+#    print(spec_array.shape)
+#    return spec_array
+
 
 def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice spec, 
+    sys.exit("split function need to be implemented!")
+'''
     split_result=np.split(spec_concat)
     if select=="voice": res = split_result[0]
     elif select=="ensemble": res = split_result[1]
     return res
+'''
 
 def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utilize load function with ease
     with open("{a}.npy".format(a=name_counter), "wb") as npy:
@@ -158,20 +168,16 @@ def save_data2npy(name_counter, nparray, save_dir): #one arry per file to utiliz
 def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
     print("generate_concat_npyfile")
-    counter=0
-    for wav in os.listdir(songdir): #maybe, separated song should be located at lower hierarchy of wav dir
+    for i, wav in enumerate(os.listdir(songdir)): #maybe, separated song should be located at lower hierarchy of wav dir
         if wav[0:3]=='vo_': continue
         else: 
-            #rate_v, raw_v_wav=wavfile.read(songdir+"vo_"+wav)
-            #rate_o, raw_o_wav=wavfile.read(songdir+wav)
-            #print(raw_v_wav.shape)
-            #print(raw_o_wav.shape)
             voice_rangetuples_list=tag2range(wav,tagfilepath)
-            rate_v, v_songpiece_array=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
-            rate_o, o_songpiece_array=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
-            spec_concat_array=get_spec_concat_array(rate_v, rate_o, v_songpiece_array, o_songpiece_array)               #this corresponds real AB
-            save_data2npy(name_counter=counter, nparray=spec_concat_array, save_dir=songdir)
-            counter+=1 
+            rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
+            rate_o, o_crop_arry=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
+            get_spec_concat_npy(rate_v, rate_o, v_crop_arry, o_crop_arry, song_no=i*10000, savedir=songdir)  
+
+#            save_data2npy(name_counter=counter, nparray=spec_concat_array, save_dir=songdir)
+#            counter+=1 
 
 '''memory does not allow to use this function
 def get_shuffled_tr_ex_array(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
