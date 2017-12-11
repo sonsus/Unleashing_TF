@@ -82,7 +82,7 @@ class pix2pix(object):
 
         self.fake_B = self.generator(self.real_A)
 
-        self.real_AB = tf.concat([self.real_A, self.real_B], 3)
+        self.real_AB = tf.concat([self.real_A, self.real_B], 3)         # concats again with axis=3 which corresponds to axis 2 for preprocess.py (color channel)
         self.fake_AB = tf.concat([self.real_A, self.fake_B], 3)
         self.D, self.D_logits = self.discriminator(self.real_AB, reuse=False)
         self.D_, self.D_logits_ = self.discriminator(self.fake_AB, reuse=True)
@@ -132,6 +132,7 @@ class pix2pix(object):
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
             )
+        #not sure sampling occurs correctly
         pr.write_specgram_img(samples, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         #save_images(samples, [self.batch_size, 1],
         #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
