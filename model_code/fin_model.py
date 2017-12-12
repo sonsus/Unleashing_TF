@@ -114,14 +114,13 @@ class pix2pix(object):
         self.saver = tf.train.Saver()
 
 
+    #treating same as rgb will be okay (since preprocess.py has to deat with dimensions on color channel) 
     def load_random_samples(self):
         data = np.random.choice(glob('./{}/*.npy'.format(self.dataset_name)), self.batch_size)
         sample = [load_npy(sample_file) for sample_file in data]
         sample_images = np.array(sample).astype(np.float32)
         return sample_images
-        #treating same as rgb will be okay (since preprocess.py has to deat with dimensions on color channel) 
-
-'''
+        '''
         if (self.is_grayscale):
             sample_images = np.array(sample).astype(np.float32)[:, :, :, None] #first index is for sample list above
             print("\ngrayscale loaded!\n")
@@ -129,7 +128,8 @@ class pix2pix(object):
             sample_images = np.array(sample).astype(np.float32)
             #sys.exit("going wrong, reading as rgb: exit")
         return sample_images
-'''
+        '''
+
     def sample_model(self, sample_dir, epoch, idx):
         sample_images = self.load_random_samples()
         samples, d_loss, g_loss = self.sess.run(
@@ -174,11 +174,14 @@ class pix2pix(object):
                 batch = [load_npy(batch_file) for batch_file in batch_files]
                 print("batch_file:\t{a}".format(a=batch[0].shape))
                 print("batch:\t{b}".format(b=np.array(batch).shape))
+                batch_images = np.array(batch).astype(np.float32)
+                '''
                 if (self.is_grayscale):
                     batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
                     print("batch_images:\t{a}".format(a=batch_images.shape))
                 else:
                     batch_images = np.array(batch).astype(np.float32)
+                '''
 
                 # Update D network
                 _, summary_str = self.sess.run([d_optim, self.d_sum],
@@ -434,13 +437,13 @@ class pix2pix(object):
         # load testing input
         print("Loading testing images ...")
         sample = [load_npy(sample_file, is_test=True) for sample_file in sample_files]
-
-
+        sample_images = np.array(sample).astype(np.float32)
+        '''
         if (self.is_grayscale):
             sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
         else:
             sample_images = np.array(sample).astype(np.float32)
-
+        '''
         sample_images = [sample_images[i:i+self.batch_size]
                          for i in range(0, len(sample_images), self.batch_size)]
         sample_images = np.array(sample_images)
