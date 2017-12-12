@@ -25,7 +25,8 @@ songs (either voice-only and originals) should be placed in the same directory
 
 import os
 import numpy as np
-import matplotlib.pyplot as plt # for fig saving --> mode collapse check
+import matplotlib.pyplot as plt 
+plt.switch_backend('agg') #for running matplotlib remotely (no graphic device available)
 import wav2spec as w2s # for spectrogram conversion codes
 from scipy.io import wavfile
 import sys
