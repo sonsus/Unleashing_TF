@@ -242,8 +242,8 @@ def write_specgram_img(specgram, imgname):   #jpgname with .png
     fig, ax = plt.subplots(nrows=1,ncols=1)
     print("write_specgram_img")
     print("if specgram.shape==1024,2048: we dont need reshape()")
-    print(specgram.shape)
-    rs_specgram=np.reshape(specgram, (1024,2048))
+    print(specgram.shape) #1,1024,1024,1
+    rs_specgram=np.reshape(specgram, (1024,1024))
     cax = ax.matshow(np.transpose(rs_specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
     plt.title('upper: voice only, lower: ensemble')
