@@ -117,15 +117,19 @@ class pix2pix(object):
     def load_random_samples(self):
         data = np.random.choice(glob('./{}/*.npy'.format(self.dataset_name)), self.batch_size)
         sample = [load_npy(sample_file) for sample_file in data]
+        sample_images = np.array(sample).astype(np.float32)
+        return sample_images
+        #treating same as rgb will be okay (since preprocess.py has to deat with dimensions on color channel) 
 
+'''
         if (self.is_grayscale):
             sample_images = np.array(sample).astype(np.float32)[:, :, :, None] #first index is for sample list above
             print("\ngrayscale loaded!\n")
         else:
             sample_images = np.array(sample).astype(np.float32)
-            sys.exit("going wrong, reading as rgb: exit")
+            #sys.exit("going wrong, reading as rgb: exit")
         return sample_images
-
+'''
     def sample_model(self, sample_dir, epoch, idx):
         sample_images = self.load_random_samples()
         samples, d_loss, g_loss = self.sess.run(
@@ -168,7 +172,8 @@ class pix2pix(object):
             for idx in range(0, batch_idxs):
                 batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
                 batch = [load_npy(batch_file) for batch_file in batch_files]
-                print("batch:\t{a}".format(a=batch[0].shape))
+                print("batch_file:\t{a}".format(a=batch[0].shape))
+                print("batch:\t{b}".format(b=np.array(batch).shape))
                 if (self.is_grayscale):
                     batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
                     print("batch_images:\t{a}".format(a=batch_images.shape))

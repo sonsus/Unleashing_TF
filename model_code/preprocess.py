@@ -124,9 +124,11 @@ def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no
         spec_v=get_specgram(rate_v, voice_crop_arry[piece_no])
         spec_o=get_specgram(rate_o, orig_crop_arry[piece_no])
         print("spec_o shape={shape}".format(shape=spec_o.shape))
-        #rs_spec_v=np.reshape(spec_v,(1024,1024,1))
-        #rs_spec_o=np.reshape(spec_o,(1024,1024,1)) #this might caused a problem
-        concat_piece=np.concatenate((spec_v,spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
+        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
+        rs_spec_o=np.reshape(spec_o,(1024,1024,1))
+        concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
+        print("saved array shape=")
+        print(concat_piece.shape)
         #concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1) #when need to visualize, axis=1 HOW WEIRD?!
         save_data2npy(name_counter=song_no+piece_no, nparray=concat_piece, savedir=savedir)
         # first piece of the first song will be named as 10000(song#)+1(piece#)==10001.npy
@@ -238,7 +240,7 @@ def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
     print("write_specgram_img")
-    print("if specgram.shape==1024,2048: we dont need reshape() at next line")
+    print("if specgram.shape==1024,2048: we dont need reshape()")
     print(specgram.shape)
     rs_specgram=np.reshape(specgram, (1024,2048))
     cax = ax.matshow(np.transpose(rs_specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
@@ -251,6 +253,7 @@ def write_specgram_img(specgram, imgname):   #jpgname with .png
 #takes too much time running. must be used only for testing
 def recover_audio(pathandwavname, specgram):
     print("recover_audio")
+    print("similar to write_specgram_img")
     print(specgram.shape)
     rs_specgram=np.reshape(specgram, (1024,1024))
     recovered=w2s.invert_pretty_spectrogram(rs_specgram, fft_size = fft_size,

@@ -1,10 +1,21 @@
 from numpy import *
 
+set_printoptions(threshold=nan)
+
+
 a=array([[ 0,  1,  2,  3],
        [10, 11, 12, 13],
        [20, 21, 22, 23],
        [30, 31, 32, 33],
        [40, 41, 42, 43]])
+b=arange(start=0, step=2, stop=40).reshape((5,4))
+
+c=stack((a,b))
+print(a)
+print(b)
+print(c)
+
+'''
 a_=a[:,:]
 a__=a[:,:,None,None]
 print(a__)
@@ -13,6 +24,7 @@ print(a_)
 print("a_.shape={s}".format(s=a_.shape))
 print("a__.shape={s}".format(s=a__.shape))
 
+'''
 '''
 def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no, savedir):
     for piece_no in range(len(voice_crop_arry)):
