@@ -168,8 +168,10 @@ class pix2pix(object):
             for idx in range(0, batch_idxs):
                 batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
                 batch = [load_npy(batch_file) for batch_file in batch_files]
+                print("batch:\t{a}".format(a=batch[0].shape))
                 if (self.is_grayscale):
                     batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
+                    print("batch_images:\t{a}".format(a=batch_images.shape))
                 else:
                     batch_images = np.array(batch).astype(np.float32)
 

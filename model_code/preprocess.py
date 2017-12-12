@@ -103,8 +103,7 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
     for tups in voice_rangetuples_list:
         v_starts=tups[0]
         v_ends=tups[1]
-        one_range=np.arange(v_starts,v_ends,st_size)
-        print("onerange=%s"%one_range)  
+        one_range=np.arange(v_starts,v_ends,st_size)  
         rangelist_set.append(one_range)
     rangelist_set=np.array(rangelist_set)
 
@@ -117,16 +116,17 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
                 songpiece=filtered_wav[stpt*rate:(stpt+win_size)*rate]
                 songpiece_list.append(songpiece)
     songpiece_array=np.array(songpiece_list)
-    print(songpiece_array.shape)
     return rate, songpiece_array
 
 def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no, savedir):
+    print("get_spec_concat_npy")
     for piece_no in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[piece_no])
         spec_o=get_specgram(rate_o, orig_crop_arry[piece_no])
-        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
-        rs_spec_o=np.reshape(spec_o,(1024,1024,1))
-        concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
+        print("spec_o shape={shape}".format(shape=spec_o.shape))
+        #rs_spec_v=np.reshape(spec_v,(1024,1024,1))
+        #rs_spec_o=np.reshape(spec_o,(1024,1024,1)) #this might caused a problem
+        concat_piece=np.concatenate((spec_v,spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
         #concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1) #when need to visualize, axis=1 HOW WEIRD?!
         save_data2npy(name_counter=song_no+piece_no, nparray=concat_piece, savedir=savedir)
         # first piece of the first song will be named as 10000(song#)+1(piece#)==10001.npy
@@ -139,7 +139,6 @@ def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no
 def get_spec_npy(rate, voice_crop_arry, song_no, savedir):
     for piece_no in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[piece_no])
-        rs_spec_v=np.reshape(spec_v,(1024,1024,1))
         save_data2npy(name_counter=song_no+piece_no,nparray=concat_piece,savedir=savedir)
 
 #    print("get_spec_array")
@@ -238,6 +237,9 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
 def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
+    print("write_specgram_img")
+    print("if specgram.shape==1024,2048: we dont need reshape() at next line")
+    print(specgram.shape)
     rs_specgram=np.reshape(specgram, (1024,2048))
     cax = ax.matshow(np.transpose(rs_specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
@@ -248,6 +250,8 @@ def write_specgram_img(specgram, imgname):   #jpgname with .png
 
 #takes too much time running. must be used only for testing
 def recover_audio(pathandwavname, specgram):
+    print("recover_audio")
+    print(specgram.shape)
     rs_specgram=np.reshape(specgram, (1024,1024))
     recovered=w2s.invert_pretty_spectrogram(rs_specgram, fft_size = fft_size,
                                             step_size = step_size, log = True, n_iter = 10)
