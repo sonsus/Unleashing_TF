@@ -139,7 +139,7 @@ class pix2pix(object):
             )
         #not sure sampling occurs correctly
         voice_only=np.reshape(voice_only,(1024,1024))
-        samples=np,reshape(samples,(1024,1024))#returns NONE: resizing in place
+        samples=np.reshape(samples,(1024,1024))#returns NONE: resizing in place
         concat=np.concatenate((voice_only, samples), axis=1)#resulting need to be 1024,2048
         print("concat shape={a}".format(a=concat.shape))
         pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
