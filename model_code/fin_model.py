@@ -214,10 +214,10 @@ class pix2pix(object):
                         time.time() - start_time, errD_fake+errD_real, errG))
 
                 
-                #if np.mod(counter, 100) == 1:
-                if np.mod(counter, 2) == 1:
+                #if np.mod(counter, 2) == 1:
+                if np.mod(counter, 100) == 1:
                     self.sample_model(args.sample_dir, epoch, idx)
-                    sys.exit("sampling test")
+                    #sys.exit("sampling test")
 
                 if np.mod(counter, 500) == 2:
                     self.save(args.checkpoint_dir, counter)
