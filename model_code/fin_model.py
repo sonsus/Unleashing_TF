@@ -132,7 +132,7 @@ class pix2pix(object):
 
     def sample_model(self, sample_dir, epoch, idx):
         sample_images = self.load_random_samples()
-        voice_only= sample_images[:,:,:,:input_c_dim]
+        voice_only= sample_images[:,:,:,:self.input_c_dim]
         samples, d_loss, g_loss = self.sess.run(
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
