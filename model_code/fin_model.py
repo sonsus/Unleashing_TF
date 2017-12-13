@@ -168,6 +168,7 @@ class pix2pix(object):
 
         for epoch in range(args.epoch):
             data = glob("./{dataset}/*.npy".format(dataset=self.dataset_name))
+            data = np.random.shuffle(data)
             batch_idxs = min(len(data), args.train_size) // self.batch_size
 
             for idx in range(0, batch_idxs):
