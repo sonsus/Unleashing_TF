@@ -137,7 +137,8 @@ class pix2pix(object):
             feed_dict={self.real_data: sample_images}
             )
         #not sure sampling occurs correctly
-        pr.write_specgram_img(samples, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+        concat=np.concatenate((sample_images, samples))
+        pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         #save_images(samples, [self.batch_size, 1],
         #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
