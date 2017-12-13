@@ -137,6 +137,8 @@ class pix2pix(object):
             feed_dict={self.real_data: sample_images}
             )
         #not sure sampling occurs correctly
+        print("sample_imgs=voiceonly{a}".format(a=sample_images.shape))
+        print("samples=generated poly{a}".format(a=samples.shape))
         concat=np.concatenate((sample_images, samples), axis=1)
         pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         #save_images(samples, [self.batch_size, 1],
@@ -209,8 +211,11 @@ class pix2pix(object):
                     % (epoch, idx, batch_idxs,
                         time.time() - start_time, errD_fake+errD_real, errG))
 
-                if np.mod(counter, 100) == 1:
+                
+                #if np.mod(counter, 100) == 1:
+                if np.mod(counter, 2) == 1:
                     self.sample_model(args.sample_dir, epoch, idx)
+                    sys.exit("sampling test")
 
                 if np.mod(counter, 500) == 2:
                     self.save(args.checkpoint_dir, counter)
