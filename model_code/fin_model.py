@@ -131,13 +131,13 @@ class pix2pix(object):
         '''
 
     def sample_model(self, sample_dir, epoch, idx):
-        sample_images = self.load_random_samples()
+        sample_images = self.load_random_samples()#sampled voice and fed to generate acompanied one
         samples, d_loss, g_loss = self.sess.run(
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
             )
         #not sure sampling occurs correctly
-        concat=np.concatenate((sample_images, samples))
+        concat=np.concatenate((sample_images, samples), axis=1)
         pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         #save_images(samples, [self.batch_size, 1],
         #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
@@ -174,8 +174,8 @@ class pix2pix(object):
             for idx in range(0, batch_idxs):
                 batch_files = data[idx*self.batch_size:(idx+1)*self.batch_size]
                 batch = [load_npy(batch_file) for batch_file in batch_files]
-                print("batch_file:\t{a}".format(a=batch[0].shape))
-                print("batch:\t{b}".format(b=np.array(batch).shape))
+                #print("batch_file:\t{a}".format(a=batch[0].shape))
+                #print("batch:\t{b}".format(b=np.array(batch).shape))
                 batch_images = np.array(batch).astype(np.float32)
                 '''
                 if (self.is_grayscale):
