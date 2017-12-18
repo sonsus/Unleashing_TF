@@ -56,7 +56,10 @@ def main(_):
         
         # generate npy files for training, testing
         # ./dataset_name/    or     ./test
-        if  args.phase=='train': pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
+        if  args.phase=='train': 
+            npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
+            if len(npytrfiles)>0: pass
+            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
         elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, tagfilepath=args.tagfile_path)
         else: exit("--phase argument is only train or test")
 

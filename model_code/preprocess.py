@@ -168,7 +168,7 @@ def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepa
     #windowsize and stepsize for chopping wavs. not for specgram
     print("generate_concat_npyfile")
     for i, wav in enumerate(os.listdir(songdir)): #maybe, separated song should be located at lower hierarchy of wav dir
-        if wav[0:3]=='vo_': continue
+        if wav[0:3]=='vo_' or wav[-3:]=="npy": continue
         else: 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
             rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
