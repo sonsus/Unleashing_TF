@@ -82,7 +82,7 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
 def get_specgram(rate,filtered_wav):
     #wav obj must underwent bandpass filter
     #print("get_specgram")    
-    specgram = w2s.pretty_spectrogram(filtered_wav.astype('float64'), fft_size = w2s.fft_size, 
+    specgram = w2s.pretty_spectrogram(filtered_wav.astype('float32'), fft_size = w2s.fft_size, 
                                    step_size = w2s.step_size, log = True, thresh = w2s.spec_thresh)
     row=len(specgram) #this corresponds to time
     col=len(specgram[0])

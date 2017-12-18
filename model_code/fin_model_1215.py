@@ -1,3 +1,4 @@
+#for some reason adamOptimizer only takes float32
 from __future__ import division
 import os
 import time
@@ -162,7 +163,6 @@ class pix2pix(object):
         #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
 
-
     def train(self, args):
         """Train pix2pix"""
         d_optim = tf.train.AdamOptimizer(args.lr, beta1=args.beta1) \
@@ -229,10 +229,9 @@ class pix2pix(object):
                     % (epoch, idx, batch_idxs,
                         time.time() - start_time, errD_fake+errD_real, errG))
 
-                
-                #if np.mod(counter, 2) == 1:
-                if np.mod(counter, 100) == 1:
-                    self.sample_model(args.sample_dir, epoch, idx)
+                self.sample_model(args.sample_dir, epoch, idx)
+                #if np.mod(counter, 100) == 1:
+                #    self.sample_model(args.sample_dir, epoch, idx)
                     #sys.exit("sampling test")
 
                 if np.mod(counter, 500) == 2:
