@@ -5,6 +5,7 @@ import numpy as np
 import preprocess as pr
 from fin_model import pix2pix
 import tensorflow as tf
+from glob import glob
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4', help='name of the dataset')
