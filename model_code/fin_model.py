@@ -147,8 +147,8 @@ class pix2pix(object):
         concat=np.concatenate((voice_only, samples), axis=1)#resulting need to be 1024,2048
         pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         #logsmoothed
-        logsmooth=np.log10(concat)
-        pr.write_specgram_img(logsmooth, '{}/train_{:02d}_{:04d}_log10.png'.format(sample_dir, epoch, idx))
+        #logsmooth=np.log10(concat)
+        #pr.write_specgram_img(logsmooth, '{}/train_{:02d}_{:04d}_log10.png'.format(sample_dir, epoch, idx))
         #scaled by voice volume
         max_samples=max(np.absolute(samples.flatten("C")))
         max_voice=max(np.absolute(voice_only.flatten("C")))
@@ -156,8 +156,8 @@ class pix2pix(object):
         normalconcat=np.concatenate((voice_only,samples_scaled), axis=1)
         pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:04d}_scaled_to_voice.png'.format(sample_dir, epoch, idx))
         #scaled, logged
-        scale_log=np.log10(normalconcat)
-        pr.write_specgram_img(scale_log, '{}/train_{:02d}_{:04d}_scale__log.png'.format(sample_dir, epoch, idx))        
+        #scale_log=np.log10(normalconcat)
+        #pr.write_specgram_img(scale_log, '{}/train_{:02d}_{:04d}_scale__log.png'.format(sample_dir, epoch, idx))        
         #save_images(samples, [self.batch_size, 1],
         #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
