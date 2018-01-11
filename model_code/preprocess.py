@@ -57,7 +57,7 @@ check_training_dir="where/specgram/jpg/are/stored/"     #for checking mode colla
 
 # gets list of tuples that has voice range with sec units
 def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
-    print("tag2range")
+    #print("tagfilepath={inp}".format(inp=tagfilepath))
     namelen=len(wav_name[:-4])#for wav_name contains .wav at the end
     lines=[]
     with open(tagfilepath) as tagfile:
@@ -168,7 +168,7 @@ def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepa
     #windowsize and stepsize for chopping wavs. not for specgram
     print("generate_concat_npyfile")
     for i, wav in enumerate(os.listdir(songdir)): #maybe, separated song should be located at lower hierarchy of wav dir
-        if wav[0:3]=='vo_' or wav[-3:]=="npy": continue
+        if wav[0:3]=="vo_" or wav[-4:]!=".wav": continue
         else: 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
             rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
