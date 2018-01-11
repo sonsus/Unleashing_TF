@@ -37,9 +37,11 @@ parser.add_argument('--continue_train', dest='continue_train', type=bool, defaul
 ###above 2 args not even being found in the code.
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
-parser.add_argument('--tagfile_path', dest='tagfile_path', default='./newtag.txt', help='voice timing tag file here')
+parser.add_argument('--tagfile_path', dest='tagfile_path', default=\tagfileupdate!, help='voice timing tag file here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
-parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=0.0, help='weight on L1 term in objective')
+parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=0, help='weight on L1 term in objective')
+parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=100, help='weight on L2 term in objective')
+
 
 args = parser.parse_args()
 

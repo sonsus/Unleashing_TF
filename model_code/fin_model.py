@@ -4,7 +4,6 @@ import time
 from glob import glob
 import tensorflow as tf
 import numpy as np
-#from six.moves import xrange
 import preprocess as pr
 import sys
 
@@ -96,7 +95,8 @@ class pix2pix(object):
         self.d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits, labels=tf.ones_like(self.D)))
         self.d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits_, labels=tf.zeros_like(self.D_)))
         self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.D_logits_, labels=tf.ones_like(self.D_))) \
-                        + self.L1_lambda * tf.reduce_mean(tf.abs(self.real_B - self.fake_B))
+                        + self.L1_lambda * tf.reduce_mean(tf.abs(self.real_B - self.fake_B)) \
+                        + self.L2_lambda * tf.reduce_mean(tf.pow(self.real_B - self.fake_B, 2))
 
         self.d_loss_real_sum = tf.summary.scalar("d_loss_real", self.d_loss_real)
         self.d_loss_fake_sum = tf.summary.scalar("d_loss_fake", self.d_loss_fake)
