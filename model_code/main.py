@@ -42,7 +42,7 @@ parser.add_argument('--test_tagfile_path', dest='test_tagfile_path', default="ta
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
 parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100, help='weight on L1 term in objective')
 parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help='weight on L2 term in objective')
-parser.add_argument('--L2_lambda', dest='GAN_lambda', type=float, default=1, help='weight on L2 term in objective')
+parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, help='weight on GAN term in objective')
 
 
 args = parser.parse_args()

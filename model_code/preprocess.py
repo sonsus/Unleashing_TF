@@ -70,7 +70,7 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
             dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   # +1 for whitespace, +4 for ".wav" extension in tag line 
 #            print(dash_sep_list)
             for dash_sep in dash_sep_list:              #["1-2", "4-5",]
-                a_range=list(dash_sep.split('-')) []    #a_range-iter0=["1","2"]
+                a_range=list(dash_sep.split('-'))       #a_range-iter0=["1","2"]
                 for i in range(len(a_range)):
                     a_range[i]=int(a_range[i])          #converting each elements into int
                 voice_rangetuples_list.append(tuple(a_range))       
