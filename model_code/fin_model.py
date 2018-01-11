@@ -13,7 +13,7 @@ from utils import *
 class pix2pix(object):
     def __init__(self, sess, image_size=1024,
                  batch_size=1, sample_size=1, output_size=1024,
-                 gf_dim=64, df_dim=64, L1_lambda=100,
+                 gf_dim=64, df_dim=64, L1_lambda=100, L2_lambda=0, GAN_lambda=1,
                  input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
                  checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None):
         """
