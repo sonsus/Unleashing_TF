@@ -38,7 +38,7 @@ parser.add_argument('--continue_train', dest='continue_train', type=bool, defaul
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
 parser.add_argument('--train_tagfile_path', dest='train_tagfile_path', default="tagforfitting.txt", help='training tag file here')
-parser.add_argument('--test_tagfile_path', dest='test_tagfile_path', default="tag_train_wo_eval.txt", help='test tag file here')
+parser.add_argument('--test_tagfile_path', dest='test_tagfile_path', default="tag_evalset_manual.txt", help='test tag file here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
 parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100, help='weight on L1 term in objective')
 parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help='weight on L2 term in objective')
