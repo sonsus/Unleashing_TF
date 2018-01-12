@@ -252,8 +252,8 @@ def recover_audio(pathandwavname, specgram):
     print("similar to write_specgram_img")
     print(specgram.shape)
     rs_specgram=np.reshape(specgram, (1024,1024))
-    recovered=w2s.invert_pretty_spectrogram(rs_specgram, fft_size = fft_size,
-                                            step_size = step_size, log = True, n_iter = 10)
+    recovered=w2s.invert_pretty_spectrogram(rs_specgram, fft_size = w2s.fft_size,
+                                            step_size = w2s.step_size, log = True, n_iter = 10)
     #recovered/=max(recovered_audio_orig)
     #recovered*=3                                       #normalize --> amplify.
     wavfile.write(pathandwavname, 44100, recovered)
