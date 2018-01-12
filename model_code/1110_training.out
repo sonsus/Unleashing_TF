@@ -1,0 +1,17 @@
+2018-01-11 09:20:42.983584: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+/home/seonilson92/anaconda3/envs/py36/lib/python3.6/importlib/_bootstrap.py:219: RuntimeWarning: compiletime version 3.5 of module 'tensorflow.python.framework.fast_tensor_util' does not match runtime version 3.6
+  return f(*args, **kwds)
+generate_concat_npyfile
+tag2range
+Traceback (most recent call last):
+  File "main.py", line 83, in <module>
+    tf.app.run()
+  File "/home/seonilson92/anaconda3/envs/py36/lib/python3.6/site-packages/tensorflow/python/platform/app.py", line 48, in run
+    _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "main.py", line 67, in main
+    else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.train_tagfile_path) # ./dataset_name is the dir name for the dataset 
+  File "/home/seonilson92/muhan_muhan/muhan_records/model_code/preprocess.py", line 173, in generate_concat_npyfile
+    voice_rangetuples_list=tag2range(wav,tagfilepath)
+  File "/home/seonilson92/muhan_muhan/muhan_records/model_code/preprocess.py", line 63, in tag2range
+    with open(tagfilepath) as tagfile:
+FileNotFoundError: [Errno 2] No such file or directory: 'tagforfitting.txt'

@@ -57,7 +57,7 @@ check_training_dir="where/specgram/jpg/are/stored/"     #for checking mode colla
 
 # gets list of tuples that has voice range with sec units
 def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
-    print("tag2range")
+    #print("tagfilepath={inp}".format(inp=tagfilepath))
     namelen=len(wav_name[:-4])#for wav_name contains .wav at the end
     lines=[]
     with open(tagfilepath) as tagfile:
@@ -67,12 +67,12 @@ def tag2range(wav_name,tagfilepath=tagfilepath):        #wavname contains .wav
     voice_rangetuples_list=[]
     for line in lines:
         if line[:namelen]==wav_name[:-4]: 
-            dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   
+            dash_sep_list=line[namelen+1+4:].rstrip("\n").split(',')   # +1 for whitespace, +4 for ".wav" extension in tag line 
 #            print(dash_sep_list)
-            for dash_sep in dash_sep_list:
-                a_range=list(dash_sep.split('-'))
+            for dash_sep in dash_sep_list:              #["1-2", "4-5",]
+                a_range=list(dash_sep.split('-'))       #a_range-iter0=["1","2"]
                 for i in range(len(a_range)):
-                    a_range[i]=int(a_range[i])    #[10,11]
+                    a_range[i]=int(a_range[i])          #converting each elements into int
                 voice_rangetuples_list.append(tuple(a_range))       
 #    print("voice_rangetuples_list is")
 #    print(voice_rangetuples_list)
@@ -168,7 +168,7 @@ def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepa
     #windowsize and stepsize for chopping wavs. not for specgram
     print("generate_concat_npyfile")
     for i, wav in enumerate(os.listdir(songdir)): #maybe, separated song should be located at lower hierarchy of wav dir
-        if wav[0:3]=='vo_' or wav[-3:]=="npy": continue
+        if wav[0:3]=="vo_" or wav[-4:]!=".wav": continue
         else: 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
             rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)

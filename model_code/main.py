@@ -8,7 +8,7 @@ import tensorflow as tf
 from glob import glob
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4', help='name of the dataset')
+parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4_organized', help='name of the dataset')
 parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=1, help='# images in batch')
 parser.add_argument('--train_size', dest='train_size', type=int, default=1e8, help='# images used to train')
@@ -37,9 +37,13 @@ parser.add_argument('--continue_train', dest='continue_train', type=bool, defaul
 ###above 2 args not even being found in the code.
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
-parser.add_argument('--tagfile_path', dest='tagfile_path', default='./newtag.txt', help='voice timing tag file here')
+parser.add_argument('--train_tagfile_path', dest='train_tagfile_path', default="tagforfitting.txt", help='training tag file here')
+parser.add_argument('--test_tagfile_path', dest='test_tagfile_path', default="tag_evalset_manual.txt", help='test tag file here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
-parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=0.0, help='weight on L1 term in objective')
+parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100, help='weight on L1 term in objective')
+parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help='weight on L2 term in objective')
+parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, help='weight on GAN term in objective')
+
 
 args = parser.parse_args()
 
@@ -60,8 +64,8 @@ def main(_):
         if  args.phase=='train': 
             npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
             if len(npytrfiles)>0: pass
-            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.tagfile_path) # ./dataset_name is the dir name for the dataset 
-        elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, tagfilepath=args.tagfile_path)
+            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.dataset_name+"/"+args.train_tagfile_path) # ./dataset_name is the dir name for the dataset 
+        elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, tagfilepath=args.test_dir+"/"+args.test_tagfile_path)
         else: exit("--phase argument is only train or test")
 
         model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
@@ -76,6 +80,5 @@ def main(_):
             model.test(args)
 
 if __name__ == '__main__':
-    print(args.dataset_name)
     tf.app.run()
     
