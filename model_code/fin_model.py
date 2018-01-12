@@ -41,6 +41,8 @@ class pix2pix(object):
         self.output_c_dim = output_c_dim
 
         self.L1_lambda = L1_lambda
+        self.L2_lambda = L2_lambda
+        self.GAN_lambda = GAN_lambda
 
         # batch normalization : deals with poor initialization helps gradient flow
         self.d_bn1 = batch_norm(name='d_bn1')
@@ -269,7 +271,7 @@ class pix2pix(object):
         with tf.variable_scope("generator") as scope:
 
             s = self.output_size
-            s2, s4, s8, s16, s32, s64, s128 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128)
+            s2, s4, s8, s16, s32, s64, s128, s256 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128), int(s/256)
 
             # all the sizes are 4 times larger (2 x 2 --> 8 x 8)
             # image is (1024 x 1024 x input_c_dim)
@@ -294,7 +296,7 @@ class pix2pix(object):
 
             
             self.d0, self.d0_w, self.d0_b = deconv2d(tf.nn.relu(e9),
-                [self.batch_size, s128, s128, self.gf_dim*8], name='g_d0', with_w=True)
+                [self.batch_size, s256, s256, self.gf_dim*8], name='g_d0', with_w=True)
             d0 = tf.nn.dropout(self.g_bn_d0(self.d0), 0.5)
             d0 = tf.concat([d0, e8], 3)
             # d1 is (4 x 4 x self.gf_dim*8*2)
@@ -353,8 +355,9 @@ class pix2pix(object):
             scope.reuse_variables()
 
             s = self.output_size
-            s2, s4, s8, s16, s32, s64, s128 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128)
+            s2, s4, s8, s16, s32, s64, s128, s256 = int(s/2), int(s/4), int(s/8), int(s/16), int(s/32), int(s/64), int(s/128), int(s/256)
 
+            # all the sizes are 4 times larger (2 x 2 --> 8 x 8)
             # image is (1024 x 1024 x input_c_dim)
             e1 = conv2d(image, self.gf_dim, name='g_e1_conv')
             # e1 is (512 x 512 x self.gf_dim)
@@ -377,7 +380,7 @@ class pix2pix(object):
 
             
             self.d0, self.d0_w, self.d0_b = deconv2d(tf.nn.relu(e9),
-                [self.batch_size, s128, s128, self.gf_dim*8], name='g_d0', with_w=True)
+                [self.batch_size, s256, s256, self.gf_dim*8], name='g_d0', with_w=True)
             d0 = tf.nn.dropout(self.g_bn_d0(self.d0), 0.5)
             d0 = tf.concat([d0, e8], 3)
             # d1 is (4 x 4 x self.gf_dim*8*2)
