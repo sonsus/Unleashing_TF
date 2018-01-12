@@ -240,15 +240,10 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
 def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
-    #print("write_specgram_img")
-    #print("if specgram.shape==1024,2048: we dont need reshape()")
-    #print(specgram.shape) #1,1024,1024,1
-    #rs_specgram=np.reshape(specgram, (1024,2048))
     cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     #fig.colorbar(cax)
-    plt.title('upper: voice only, lower: ensemble')
+    plt.title('upper: generated_ensemble\n middle:original_ensemble\nlower: vocal_only')
     plt.savefig(imgname,bbox_inches="tight",pad_inches=0)
-    #plt.savefig(check_training_dir+imgname,bbox_inches="tight",pad_inches=0)
 
 
 #takes too much time running. must be used only for testing

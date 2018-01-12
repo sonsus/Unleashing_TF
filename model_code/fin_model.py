@@ -43,6 +43,7 @@ class pix2pix(object):
         self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
         self.GAN_lambda = GAN_lambda
+        self.model_hyp_param="%s_gan_%s_l1_%s_l2_%s" % (self.dataset_name, self.GAN_lambda, self.L1_lambda, self.L2_lambda)
 
         # batch normalization : deals with poor initialization helps gradient flow
         self.d_bn1 = batch_norm(name='d_bn1')
@@ -136,34 +137,38 @@ class pix2pix(object):
 
     def sample_model(self, sample_dir, epoch, idx):
         sample_images = self.load_random_samples()
+
         voice_only= sample_images[:,:,:,:self.input_c_dim]
-        samples, d_loss, g_loss = self.sess.run(
+        ensemble_real=sample_images[:,:,:,:self.input_c_dim]
+        ensemble_fake, d_loss, g_loss = self.sess.run(
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
             )
         #not sure sampling occurs correctly
+        ensemble_real=np.reshape(real_b, (1024,1024))
         voice_only=np.reshape(voice_only,(1024,1024))
-        with open("sample_{a}.npy".format(a=idx), "wb") as f:
+
+        modelwise_sample_dir=args.sample_dir+"/"+self.model_hyp_param
+        if not os.path.exists(modelwise_sample_dir):
+            os.makedirs(modelwise_sample_dir)
+
+        with open(modelwise_sample_dir+"/sample_{a}.npy".format(a=idx), "wb") as f:
             np.save(f,samples)
         
-        samples=np.reshape(samples,(1024,1024))#returns NONE: resizing in place
+        ensemble_fake=np.reshape(samples,(1024,1024))#returns NONE: resizing in place
         #concat
-        concat=np.concatenate((voice_only, samples), axis=1)#resulting need to be 1024,2048
-        pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
-        #logsmoothed
-        #logsmooth=np.log10(concat)
-        #pr.write_specgram_img(logsmooth, '{}/train_{:02d}_{:04d}_log10.png'.format(sample_dir, epoch, idx))
-        #scaled by voice volume
-        max_samples=max(np.absolute(samples.flatten("C")))
+        concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,2048
+        #pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+        
+        # scale ensemble_fake
+        max_samples=max(np.absolute(ensemble_fake.flatten("C")))
         max_voice=max(np.absolute(voice_only.flatten("C")))
-        samples_scaled=samples*(max_voice/max_samples)
-        normalconcat=np.concatenate((voice_only,samples_scaled), axis=1)
-        pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:04d}_scaled_to_voice.png'.format(sample_dir, epoch, idx))
-        #scaled, logged
-        #scale_log=np.log10(normalconcat)
-        #pr.write_specgram_img(scale_log, '{}/train_{:02d}_{:04d}_scale__log.png'.format(sample_dir, epoch, idx))        
-        #save_images(samples, [self.batch_size, 1],
-        #            './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+        ensemble_fake_scaled=ensemble_fake*(max_voice/max_samples)
+        
+        normalconcat=np.concatenate((voice_only,ensemble_fake_scaled), axis=1)
+        
+        # write specgram
+        pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:06d}.png'.format(modelwise_sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
 
 
@@ -435,8 +440,8 @@ class pix2pix(object):
 
 
     def save(self, checkpoint_dir, step):
-        model_name = "pix2pix.model"
-        model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.output_size)
+        model_name = "pix2pix.model"% (self.GAN_lambda, self.L1_lambda, self.L2_lambda)
+        model_dir = self.model_hyp_param
         checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         if not os.path.exists(checkpoint_dir):
@@ -449,7 +454,7 @@ class pix2pix(object):
     def load(self, checkpoint_dir):
         print(" [*] Reading checkpoint...")
 
-        model_dir = "%s_%s_%s" % (self.dataset_name, self.batch_size, self.output_size)
+        model_dir = self.model_hyp_param
         checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)

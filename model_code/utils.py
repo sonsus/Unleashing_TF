@@ -17,9 +17,7 @@ get_stddev = lambda x, k_h, k_w: 1/math.sqrt(k_w*k_h*x.get_shape()[-1])
 # -----------------------------
 # new added functions for pix2pix
 def load_npy(npypath):
-    res=None
-    with open(npypath, "rb") as f:
-        res=np.load(f)
+    res=np.load(npypath)
     return res
 
 '''
