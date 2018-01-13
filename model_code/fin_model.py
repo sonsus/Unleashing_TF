@@ -63,13 +63,14 @@ class pix2pix(object):
         self.g_bn_d6 = batch_norm(name='g_bn_d6')
         self.g_bn_d7 = batch_norm(name='g_bn_d7')
 
+        self.dataset_name=dataset_name
+        
         self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
         self.GAN_lambda = GAN_lambda
         self.model_hyp_param="%s_gan_%s_l1_%s_l2_%s"%(self.dataset_name, self.GAN_lambda, self.L1_lambda, self.L2_lambda)
         
         self.tagfile_path=tagfile_path
-        self.dataset_name=dataset_name
         # modify sampledir, checkpointdir 
         self.sample_dir=os.path.join(sample_dir, self.model_hyp_param)
         self.checkpoint_dir=os.path.join(checkpoint_dir, self.model_hyp_param)
