@@ -40,6 +40,12 @@ class pix2pix(object):
         self.input_c_dim = input_c_dim
         self.output_c_dim = output_c_dim
 
+        self.dataset_name = dataset_name
+        self.L1_lambda = L1_lambda
+        self.L2_lambda = L2_lambda
+        self.GAN_lambda = GAN_lambda
+        self.model_hyp_param="%s_gan_%s_l1_%s_l2_%s" % (self.dataset_name, self.GAN_lambda, self.L1_lambda, self.L2_lambda)
+
         # batch normalization : deals with poor initialization helps gradient flow
         self.d_bn1 = batch_norm(name='d_bn1')
         self.d_bn2 = batch_norm(name='d_bn2')
@@ -63,27 +69,10 @@ class pix2pix(object):
         self.g_bn_d6 = batch_norm(name='g_bn_d6')
         self.g_bn_d7 = batch_norm(name='g_bn_d7')
 
-        self.L1_lambda = L1_lambda
-        self.L2_lambda = L2_lambda
-        self.GAN_lambda = GAN_lambda
-        self.model_hyp_param="%s_gan_%s_l1_%s_l2_%s"%(self.dataset_name, self.GAN_lambda, self.L1_lambda, self.L2_lambda)
-        
+        self.checkpoint_dir = checkpoint_dir
+        self.test_dir=test_dir
+        self.sample_dir=sample_dir
         self.tagfile_path=tagfile_path
-        self.dataset_name=dataset_name
-        # modify sampledir, checkpointdir 
-        self.sample_dir=os.path.join(sample_dir, self.model_hyp_param)
-        self.checkpoint_dir=os.path.join(checkpoint_dir, self.model_hyp_param)
-        self.test_dir=os.path.join(test_dir, self.model_hyp_param)
-        # generate folders if not exist 
-        if not os.path.exists(args.checkpoint_dir):
-            os.makedirs(args.checkpoint_dir)
-        if not os.path.exists(args.sample_dir):
-            os.makedirs(args.sample_dir)
-        if not os.path.exists(args.test_dir):
-            os.makedirs(args.test_dir)
-
-        #those part shouldve been at main.py rather than here but im lazy so just go
-        
         self.build_model()
 
     def build_model(self):
@@ -159,28 +148,28 @@ class pix2pix(object):
         ensemble_real=np.reshape(ensemble_real, (1024,1024))
         voice_only=np.reshape(voice_only,(1024,1024))
 
-        #modelwise_sample_dir=sample_dir+"/"+self.model_hyp_param
-        #if not os.path.exists(modelwise_sample_dir):
-        #    os.makedirs(modelwise_sample_dir)
+        modelwise_sample_dir=sample_dir+"/"+self.model_hyp_param
+        if not os.path.exists(modelwise_sample_dir):
+            os.makedirs(modelwise_sample_dir)
+
+        with open(modelwise_sample_dir+"/sample_{a}.npy".format(a=idx), "wb") as f:
+            np.save(f,ensemble_fake)
         
         ensemble_fake=np.reshape(ensemble_fake,(1024,1024))#returns NONE: resizing in place
         #concat
-        concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,3072
-
+        concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,2048
+        #pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+        
         # scale ensemble_fake
         max_samples=max(np.absolute(ensemble_fake.flatten("C")))
         max_voice=max(np.absolute(voice_only.flatten("C")))
         ensemble_fake_scaled=ensemble_fake*(max_voice/max_samples)
-
-        with open(sample_dir+"/fake_ensemble{a}.npy".format(a=idx), "wb") as f:
-            np.save(f,ensemble_fake_scaled)
         
-        normalconcat=np.concatenate((voice_only, ensemble_real, ensemble_fake_scaled), axis=1)
+        normalconcat=np.concatenate((voice_only,ensemble_fake_scaled), axis=1)
         
         # write specgram
-        pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:06d}.png'.format(sample_dir, epoch, idx))
+        pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:06d}.png'.format(modelwise_sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
-
 
     def train(self, args):
         """Train pix2pix"""
@@ -451,18 +440,21 @@ class pix2pix(object):
 
     def save(self, checkpoint_dir, step):
         model_name = "pix2pix.model"
+        model_dir = self.model_hyp_param
+        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
+
+        if not os.path.exists(checkpoint_dir):
+            os.makedirs(checkpoint_dir)
+
         self.saver.save(self.sess,
                         os.path.join(checkpoint_dir, model_name),
                         global_step=step)
 
-        #model_dir = self.model_hyp_param
-        #checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
-        #if not os.path.exists(checkpoint_dir):
-        #    os.makedirs(checkpoint_dir)
-
-
     def load(self, checkpoint_dir):
         print(" [*] Reading checkpoint...")
+
+        model_dir = self.model_hyp_param
+        checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
@@ -471,9 +463,6 @@ class pix2pix(object):
             return True
         else:
             return False
-
-        #model_dir = self.model_hyp_param
-        #checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
 
     def test(self, args):

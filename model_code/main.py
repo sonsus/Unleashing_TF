@@ -48,19 +48,14 @@ parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, he
 args = parser.parse_args()
 
 def main(_):
-    if not os.path.exists(args.checkpoint_dir):
-        os.makedirs(args.checkpoint_dir)
-    if not os.path.exists(args.sample_dir):
-        os.makedirs(args.sample_dir)
-    if not os.path.exists(args.test_dir):
-        os.makedirs(args.test_dir)
+#    if not os.path.exists(args.checkpoint_dir):
+#        os.makedirs(args.checkpoint_dir)
+#    if not os.path.exists(args.sample_dir):
+#        os.makedirs(args.sample_dir)
+#    if not os.path.exists(args.test_dir):
+#        os.makedirs(args.test_dir)
 
     with tf.Session() as sess:
-        # --phase arg determines where the data should be fetched from
-
-        
-        # generate npy files for training, testing
-        # ./dataset_name/    or     ./test
         if  args.phase=='train': 
             npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
             if len(npytrfiles)>0: pass
