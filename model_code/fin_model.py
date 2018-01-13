@@ -14,8 +14,9 @@ class pix2pix(object):
     def __init__(self, sess, image_size=1024,
                  batch_size=1, sample_size=1, output_size=1024,
                  gf_dim=64, df_dim=64, L1_lambda=100, L2_lambda=0, GAN_lambda=1,
-                 input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4_organized',
-                 checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None):
+                 input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
+                 checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None, 
+                 d_sche=None, g_sche=None):
         """
 
         Args:
@@ -27,6 +28,9 @@ class pix2pix(object):
             input_c_dim: (optional) Dimension of input image color. For grayscale input, set to 1. [3]
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
+        self.d_sche=d_sche
+        self.g_sche=g_sche
+
         self.sess = sess
         self.is_grayscale = (input_c_dim == 1)
         self.batch_size = batch_size
@@ -63,29 +67,21 @@ class pix2pix(object):
         self.g_bn_d6 = batch_norm(name='g_bn_d6')
         self.g_bn_d7 = batch_norm(name='g_bn_d7')
 
-        self.dataset_name=dataset_name
         
         self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
-        self.GAN_lambda = GAN_lambda
-        self.model_hyp_param="%s_gan_%s_l1_%s_l2_%s"%(self.dataset_name, self.GAN_lambda, self.L1_lambda, self.L2_lambda)
+        self.GAN_lambda = GAN_lambda        
         
         self.tagfile_path=tagfile_path
-        # modify sampledir, checkpointdir 
-        self.sample_dir=os.path.join(sample_dir, self.model_hyp_param)
-        self.checkpoint_dir=os.path.join(checkpoint_dir, self.model_hyp_param)
-        self.test_dir=os.path.join(test_dir, self.model_hyp_param)
-        # generate folders if not exist 
-        if not os.path.exists(checkpoint_dir):
-            os.makedirs(checkpoint_dir)
-        if not os.path.exists(sample_dir):
-            os.makedirs(sample_dir)
-        if not os.path.exists(test_dir):
-            os.makedirs(test_dir)
+
+        self.dataset_name=dataset_name
+        self.sample_dir=sample_dir
+        self.checkpoint_dir=checkpoint_dir
+        self.test_dir=test_dir 
 
         #those part shouldve been at main.py rather than here but im lazy so just go
-        
         self.build_model()
+
 
     def build_model(self):
         self.real_data = tf.placeholder(tf.float32,
@@ -137,15 +133,7 @@ class pix2pix(object):
         sample = [load_npy(sample_file) for sample_file in data]
         sample_images = np.array(sample).astype(np.float32)
         return sample_images
-        '''
-        if (self.is_grayscale):
-            sample_images = np.array(sample).astype(np.float32)[:, :, :, None] #first index is for sample list above
-            print("\ngrayscale loaded!\n")
-        else:
-            sample_images = np.array(sample).astype(np.float32)
-            #sys.exit("going wrong, reading as rgb: exit")
-        return sample_images
-        '''
+
 
     def sample_model(self, sample_dir, epoch, idx):
         sample_images = self.load_random_samples()
@@ -156,29 +144,26 @@ class pix2pix(object):
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
             )
-        #not sure sampling occurs correctly
-        ensemble_real=np.reshape(ensemble_real, (1024,1024))
-        voice_only=np.reshape(voice_only,(1024,1024))
 
-        #modelwise_sample_dir=sample_dir+"/"+self.model_hyp_param
-        #if not os.path.exists(modelwise_sample_dir):
-        #    os.makedirs(modelwise_sample_dir)
+        #not sure sampling occurs correctly
+        voice_only=np.reshape(voice_only,(1024,1024))
+        ensemble_real=np.reshape(ensemble_real, (1024,1024))
+        ensemble_fake=np.reshape(ensemble_fake,(1024,1024)) #np.reshape() returns array ndarray.resize() returns NONE 
         
-        ensemble_fake=np.reshape(ensemble_fake,(1024,1024))#returns NONE: resizing in place
-        #concat
-        concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,3072
+        #if I wanted non-scaled specgram
+        #concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,3072
+        #pr.write_specgram_img()
 
         # scale ensemble_fake
         max_samples=max(np.absolute(ensemble_fake.flatten("C")))
         max_voice=max(np.absolute(voice_only.flatten("C")))
         ensemble_fake_scaled=ensemble_fake*(max_voice/max_samples)
-
+        # save ensemble_fake as nparray np.load("f.npy will load nparray")
         with open(sample_dir+"/fake_ensemble{a}.npy".format(a=idx), "wb") as f:
             np.save(f,ensemble_fake_scaled)
         
+        # write specgram (bot: voice, mid: ensemble_real, top: ensemble_fake)
         normalconcat=np.concatenate((voice_only, ensemble_real, ensemble_fake_scaled), axis=1)
-        
-        # write specgram
         pr.write_specgram_img(normalconcat, '{}/train_{:02d}_{:06d}.png'.format(sample_dir, epoch, idx))
         print("[Sample] d_loss: {:.8f}, g_loss: {:.8f}".format(d_loss, g_loss))
 
@@ -217,28 +202,17 @@ class pix2pix(object):
                 #print("batch_file:\t{a}".format(a=batch[0].shape))
                 #print("batch:\t{b}".format(b=np.array(batch).shape))
                 batch_images = np.array(batch).astype(np.float32)
-                '''
-                if (self.is_grayscale):
-                    batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
-                    print("batch_images:\t{a}".format(a=batch_images.shape))
-                else:
-                    batch_images = np.array(batch).astype(np.float32)
-                '''
 
-                # Update D network
-                _, summary_str = self.sess.run([d_optim, self.d_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
+                for d_schedule in range(self.d_sche):
+                    _, summary_str = self.sess.run([d_optim, self.d_sum],
+                                                   feed_dict={ self.real_data: batch_images })
+                    self.writer.add_summary(summary_str, counter)
 
-                # Update G network
-                _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
+                for g_schedule in range(self.g_sche):
+                    _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                                   feed_dict={ self.real_data: batch_images })
+                    self.writer.add_summary(summary_str, counter)
 
-                # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
-                _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                               feed_dict={ self.real_data: batch_images })
-                self.writer.add_summary(summary_str, counter)
 
                 errD_fake = self.d_loss_fake.eval({self.real_data: batch_images})
                 errD_real = self.d_loss_real.eval({self.real_data: batch_images})
@@ -252,11 +226,11 @@ class pix2pix(object):
                 
                 #if np.mod(counter, 2) == 1:
                 if np.mod(counter, 100) == 1:
-                    self.sample_model(args.sample_dir, epoch, idx)
+                    self.sample_model(self.sample_dir, epoch, idx)
                     #sys.exit("sampling test")
 
                 if np.mod(counter, 500) == 2:
-                    self.save(args.checkpoint_dir, counter)
+                    self.save(self.checkpoint_dir, counter)
 
     def discriminator(self, image, y=None, reuse=False):
 
@@ -489,25 +463,11 @@ class pix2pix(object):
         sample_files = [x for (y, x) in sorted(zip(n, sample_files))] #list(zip([1,2,3,4], "abcde")) == [(1,a),(2,b),(3,c),(4,d)] 
                                                                       #zip(*zip(list1,list2))=x,y --> (list(x)==list1, list(y)==list2) is same as (True, True)
         
-        '''
-        print(n)
-        print(sample_files)
-        criterion=input("done right?(type yes to go further): ")
-
-        if criterion=="yes": pass
-        else: sys.exit()
-        '''
-
         # load testing input
         print("Loading testing images ...")
         sample = [load_npy(sample_file, is_test=True) for sample_file in sample_files]
         sample_images = np.array(sample).astype(np.float32)
-        '''
-        if (self.is_grayscale):
-            sample_images = np.array(sample).astype(np.float32)[:, :, :, None]
-        else:
-            sample_images = np.array(sample).astype(np.float32)
-        '''
+        
         sample_images = [sample_images[i:i+self.batch_size]
                          for i in range(0, len(sample_images), self.batch_size)]
         sample_images = np.array(sample_images)

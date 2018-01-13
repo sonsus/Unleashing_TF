@@ -8,11 +8,9 @@ import tensorflow as tf
 from glob import glob
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4', help='name of the dataset')
 parser.add_argument('--epoch', dest='epoch', type=int, default=200, help='# of epoch')
 parser.add_argument('--batch_size', dest='batch_size', type=int, default=1, help='# images in batch')
 parser.add_argument('--train_size', dest='train_size', type=int, default=1e8, help='# images used to train')
-#\parser.add_argument('--load_size', dest='load_size', type=int, default=286, help='scale images to this size')
 parser.add_argument('--fine_size', dest='fine_size', type=int, default=1024, help='then crop to this size')
 #we dont crop
 parser.add_argument('--ngf', dest='ngf', type=int, default=64, help='# of gen filters in first conv layer')
@@ -31,46 +29,63 @@ parser.add_argument('--save_epoch_freq', dest='save_epoch_freq', type=int, defau
 parser.add_argument('--save_latest_freq', dest='save_latest_freq', type=int, default=5000, help='save the latest model every latest_freq sgd iterations (overwrites the previous latest model)')
 parser.add_argument('--print_freq', dest='print_freq', type=int, default=50, help='print the debug information every print_freq iterations')
 parser.add_argument('--continue_train', dest='continue_train', type=bool, default=False, help='if continue training, load the latest model: 1: true, 0: false')
-#parser.add_argument('--serial_batches', dest='serial_batches', type=bool, default=False, help='f 1, takes images in order to make batches, otherwise takes them randomly')
-# set serial_batches = True because already shuffled the data before gets fed
-#parser.add_argument('--serial_batch_iter', dest='serial_batch_iter', type=bool, default=True, help='iter into serial image list')
-###above 2 args not even being found in the code.
+#directory names
+parser.add_argument('--dataset_name', dest='dataset_name', default='bolbbalgan4', help='name of the dataset')
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir', default='./checkpoint', help='models are saved here')
 parser.add_argument('--sample_dir', dest='sample_dir', default='./sample', help='sample are saved here')
-parser.add_argument('--train_tagfile_path', dest='train_tagfile_path', default="tagforfitting.txt", help='training tag file here')
-parser.add_argument('--test_tagfile_path', dest='test_tagfile_path', default="tag_evalset_manual.txt", help='test tag file here')
+parser.add_argument('--train_tagfile_name', dest='train_tagfile_name', default="tagforfitting.txt", help='training tag file here')
+parser.add_argument('--test_tagfile_name', dest='test_tagfile_name', default="tag_evalset_manual.txt", help='test tag file here')
 parser.add_argument('--test_dir', dest='test_dir', default='./test', help='test sample are saved here')
+
+#loss fucntion weights 
 parser.add_argument('--L1_lambda', dest='L1_lambda', type=float, default=100, help='weight on L1 term in objective')
 parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help='weight on L2 term in objective')
 parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, help='weight on GAN term in objective')
 
+#generator, discriminator schedule
+parser.add_argument('--numD', dest='d_sche', type=float, default=1, help='number of G optim')
+parser.add_argument('--numG', dest='g_sche', type=float, default=2, help='number of D optim')
 
 args = parser.parse_args()
 
 def main(_):
-#    if not os.path.exists(args.checkpoint_dir):
-#        os.makedirs(args.checkpoint_dir)
-#    if not os.path.exists(args.sample_dir):
-#        os.makedirs(args.sample_dir)
-#    if not os.path.exists(args.test_dir):
-#        os.makedirs(args.test_dir)
+    model_tag="g_{g}_l1_{l1}_l2_{l2}_dg_sche_{dsche},{gsche}".format(g=args.GAN_lambda, \
+                                                                l1=args.L1_lambda, l2=args.L2_lambda, \
+                                                                dsche=args.d_sche, gsche=args.g_sche)
+    #making directories for 
+    new_checkpoint_dir=os.path.join(args.checkpoint_dir, model_tag)
+    new_sample_dir=os.path.join(args.sample_dir, model_tag)
+    new_test_dir=os.path.join(args.test_dir, model_tag)
+
+    if not os.path.exists(new_checkpoint_dir):
+        os.makedirs(new_checkpoint_dir)
+    if not os.path.exists(new_sample_dir):
+        os.makedirs(new_sample_dir)
+    if not os.path.exists(new_test_dir):
+        os.makedirs(new_test_dir)
 
     with tf.Session() as sess:
         if  args.phase=='train': 
             npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
             if len(npytrfiles)>0: pass
-            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", tagfilepath=args.dataset_name+"/"+args.train_tagfile_path) # ./dataset_name is the dir name for the dataset 
-        elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, tagfilepath=args.test_dir+"/"+args.test_tagfile_path)
+            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", 
+                                    tagfilepath=args.dataset_name+"/"+args.train_tagfile_name) # ./dataset_name is the dir name for the dataset 
+        elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, 
+                                    tagfilepath=new_test_dir+"/"+args.test_tagfile_name)
         else: exit("--phase argument is only train or test")
 
         model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
                         output_size=args.fine_size, dataset_name=args.dataset_name,
-                        checkpoint_dir=args.checkpoint_dir, sample_dir=args.sample_dir, test_dir=args.test_dir)
+                        checkpoint_dir=new_checkpoint_dir, sample_dir=new_sample_dir, 
+                        test_dir=new_test_dir, d_sche=args.d_sche, g_sche=args.g_sche)
 
 
         if args.phase == 'train':
-            print("train")
-            print("{g}, {l1}, {l2}".format(g=args.GAN_lambda, l1=args.L1_lambda, l2=args.L2_lambda))
+            print("\n\n")
+            print("\ttrain")
+            print("\tweigt g/l1/l2:{g}, {l1}, {l2}".format(g=args.GAN_lambda, l1=args.L1_lambda, l2=args.L2_lambda))
+            print("\tschedule d-g: {dsche},{gsche}".format(dsche=args.d_sche, gsche=args.g_sche))
+            print("\n\n")
             model.train(args)
         else:
             model.test(args)
