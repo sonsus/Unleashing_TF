@@ -383,7 +383,7 @@ class pix2pix(object):
             e9 = self.g_bn_e9(conv2d(lrelu(e8), self.gf_dim*8, name='g_e9_conv'))
             # e9 is (2 x 2 x self.gf_dim*8)
 
-            
+
             self.d0, self.d0_w, self.d0_b = deconv2d(tf.nn.relu(e9),
                 [self.batch_size, s256, s256, self.gf_dim*8], name='g_d0', with_w=True)
             d0 = tf.nn.dropout(self.g_bn_d0(self.d0), 0.5)
@@ -440,7 +440,7 @@ class pix2pix(object):
 
 
     def save(self, checkpoint_dir, step):
-        model_name = "pix2pix.model"% (self.GAN_lambda, self.L1_lambda, self.L2_lambda)
+        model_name = "pix2pix.model"
         model_dir = self.model_hyp_param
         checkpoint_dir = os.path.join(checkpoint_dir, model_dir)
 
