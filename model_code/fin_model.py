@@ -148,14 +148,14 @@ class pix2pix(object):
         ensemble_real=np.reshape(ensemble_real, (1024,1024))
         voice_only=np.reshape(voice_only,(1024,1024))
 
-        modelwise_sample_dir=args.sample_dir+"/"+self.model_hyp_param
+        modelwise_sample_dir=sample_dir+"/"+self.model_hyp_param
         if not os.path.exists(modelwise_sample_dir):
             os.makedirs(modelwise_sample_dir)
 
         with open(modelwise_sample_dir+"/sample_{a}.npy".format(a=idx), "wb") as f:
-            np.save(f,samples)
+            np.save(f,ensemble_fake)
         
-        ensemble_fake=np.reshape(samples,(1024,1024))#returns NONE: resizing in place
+        ensemble_fake=np.reshape(ensemble_fake,(1024,1024))#returns NONE: resizing in place
         #concat
         concat=np.concatenate((voice_only, ensemble_real, ensemble_fake), axis=1)#resulting need to be 1024,2048
         #pr.write_specgram_img(concat, '{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
