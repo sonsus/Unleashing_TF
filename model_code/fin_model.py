@@ -76,12 +76,12 @@ class pix2pix(object):
         self.checkpoint_dir=os.path.join(checkpoint_dir, self.model_hyp_param)
         self.test_dir=os.path.join(test_dir, self.model_hyp_param)
         # generate folders if not exist 
-        if not os.path.exists(args.checkpoint_dir):
-            os.makedirs(args.checkpoint_dir)
-        if not os.path.exists(args.sample_dir):
-            os.makedirs(args.sample_dir)
-        if not os.path.exists(args.test_dir):
-            os.makedirs(args.test_dir)
+        if not os.path.exists(checkpoint_dir):
+            os.makedirs(checkpoint_dir)
+        if not os.path.exists(sample_dir):
+            os.makedirs(sample_dir)
+        if not os.path.exists(test_dir):
+            os.makedirs(test_dir)
 
         #those part shouldve been at main.py rather than here but im lazy so just go
         
