@@ -40,6 +40,7 @@ class pix2pix(object):
         self.input_c_dim = input_c_dim
         self.output_c_dim = output_c_dim
 
+        self.dataset_name = dataset_name
         self.L1_lambda = L1_lambda
         self.L2_lambda = L2_lambda
         self.GAN_lambda = GAN_lambda
@@ -68,7 +69,6 @@ class pix2pix(object):
         self.g_bn_d6 = batch_norm(name='g_bn_d6')
         self.g_bn_d7 = batch_norm(name='g_bn_d7')
 
-        self.dataset_name = dataset_name
         self.checkpoint_dir = checkpoint_dir
         self.test_dir=test_dir
         self.sample_dir=sample_dir
@@ -139,13 +139,13 @@ class pix2pix(object):
         sample_images = self.load_random_samples()
 
         voice_only= sample_images[:,:,:,:self.input_c_dim]
-        ensemble_real=sample_images[:,:,:,:self.input_c_dim]
+        ensemble_real=sample_images[:,:,:,self.input_c_dim:]
         ensemble_fake, d_loss, g_loss = self.sess.run(
             [self.fake_B_sample, self.d_loss, self.g_loss],
             feed_dict={self.real_data: sample_images}
             )
         #not sure sampling occurs correctly
-        ensemble_real=np.reshape(real_b, (1024,1024))
+        ensemble_real=np.reshape(ensemble_real, (1024,1024))
         voice_only=np.reshape(voice_only,(1024,1024))
 
         modelwise_sample_dir=args.sample_dir+"/"+self.model_hyp_param
