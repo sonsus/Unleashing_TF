@@ -43,14 +43,14 @@ parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help
 parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, help='weight on GAN term in objective')
 
 #generator, discriminator schedule
-parser.add_argument('--numD', dest='d_sche', type=float, default=1, help='number of G optim')
-parser.add_argument('--numG', dest='g_sche', type=float, default=2, help='number of D optim')
+parser.add_argument('--numD', dest='d_sche', type=int, default=1, help='number of G optim')
+parser.add_argument('--numG', dest='g_sche', type=int, default=2, help='number of D optim')
 
 args = parser.parse_args()
 
 def main(_):
-    model_tag="g_{g}_l1_{l1}_l2_{l2}_dg_sche_{dsche}_{gsche}".format(g=args.GAN_lambda, \
-                                                                l1=args.L1_lambda, l2=args.L2_lambda, \
+    model_tag="g_{g}_l1_{l1}_l2_{l2}_dg_sche_{dsche}_{gsche}".format(g=args.GAN_lambda, 
+                                                                l1=args.L1_lambda, l2=args.L2_lambda, 
                                                                 dsche=args.d_sche, gsche=args.g_sche)
     #logdir
     new_logdir="logs_"+model_tag
