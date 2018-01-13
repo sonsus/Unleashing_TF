@@ -70,6 +70,7 @@ def main(_):
 
         if args.phase == 'train':
             print("train")
+            print("{g}, {l1}, {l2}".format(g=args.GAN_lambda, l1=args.L1_lambda, l2=args.L2_lambda))
             model.train(args)
         else:
             model.test(args)
