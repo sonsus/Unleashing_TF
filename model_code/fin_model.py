@@ -16,7 +16,7 @@ class pix2pix(object):
                  gf_dim=64, df_dim=64, L1_lambda=100, L2_lambda=0, GAN_lambda=1,
                  input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
                  checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None, 
-                 d_sche=None, g_sche=None):
+                 logdir=None, d_sche=None, g_sche=None):
         """
 
         Args:
@@ -77,7 +77,8 @@ class pix2pix(object):
         self.dataset_name=dataset_name
         self.sample_dir=sample_dir
         self.checkpoint_dir=checkpoint_dir
-        self.test_dir=test_dir 
+        self.test_dir=test_dir
+        self.logdir=logdir  
 
         #those part shouldve been at main.py rather than here but im lazy so just go
         self.build_model()
@@ -181,7 +182,7 @@ class pix2pix(object):
         self.g_sum = tf.summary.merge([self.d__sum,
             self.fake_B_sum, self.d_loss_fake_sum, self.g_loss_sum])
         self.d_sum = tf.summary.merge([self.d_sum, self.d_loss_real_sum, self.d_loss_sum])
-        self.writer = tf.summary.FileWriter("./logs_{tag}".format(tag=self.model_hyp_param), self.sess.graph)
+        self.writer = tf.summary.FileWriter(self.logdir, self.sess.graph)
 
         counter = 1
         start_time = time.time()
@@ -467,7 +468,7 @@ class pix2pix(object):
         print("Loading testing images ...")
         sample = [load_npy(sample_file, is_test=True) for sample_file in sample_files]
         sample_images = np.array(sample).astype(np.float32)
-        
+
         sample_images = [sample_images[i:i+self.batch_size]
                          for i in range(0, len(sample_images), self.batch_size)]
         sample_images = np.array(sample_images)
