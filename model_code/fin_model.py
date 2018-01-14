@@ -226,13 +226,14 @@ class pix2pix(object):
 
                 
                 #if np.mod(counter, 2) == 1:
-                if counter in range(40) and np.mod(counter,5)=0:
+                if counter in range(40) and np.mod(counter,5) == 0:
                     self.sample_model(self.sample_dir, epoch, idx)
                     self.save(self.checkpoint_dir, counter)
+
                 if np.mod(counter, 100) == 1:
                     self.sample_model(self.sample_dir, epoch, idx)
                     #sys.exit("sampling test")
-
+                    
                 if np.mod(counter, 500) == 2:
                     self.save(self.checkpoint_dir, counter)
 
