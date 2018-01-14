@@ -45,13 +45,15 @@ parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, he
 #generator, discriminator schedule
 parser.add_argument('--numD', dest='d_sche', type=int, default=1, help='number of G optim')
 parser.add_argument('--numG', dest='g_sche', type=int, default=2, help='number of D optim')
+parser.add_argument('--smoothe', dest='smoothe', type=float, default=1, help='generator tanh smoothing')
 
 args = parser.parse_args()
 
 def main(_):
-    model_tag="g_{g}_l1_{l1}_l2_{l2}_dg_sche_{dsche}_{gsche}".format(g=args.GAN_lambda, 
+    model_tag="g_{g}_l1_{l1}_l2_{l2}_dg_sche_{dsche}_{gsche}_smoothe_{sm}".format(g=args.GAN_lambda, 
                                                                 l1=args.L1_lambda, l2=args.L2_lambda, 
-                                                                dsche=args.d_sche, gsche=args.g_sche)
+                                                                dsche=args.d_sche, gsche=args.g_sche,
+                                                                sm=args.smoothe)
     #logdir
     new_logdir="logs_"+model_tag
     #making directories for 
@@ -83,7 +85,8 @@ def main(_):
         model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,
                         output_size=args.fine_size, dataset_name=args.dataset_name,
                         checkpoint_dir=new_checkpoint_dir, sample_dir=new_sample_dir, 
-                        test_dir=new_test_dir, logdir=new_logdir, d_sche=args.d_sche, g_sche=args.g_sche)
+                        test_dir=new_test_dir, logdir=new_logdir, d_sche=args.d_sche, g_sche=args.g_sche,
+                        smoothe=args.smoothe)
 
 
         if args.phase == 'train':
@@ -91,6 +94,7 @@ def main(_):
             print("\ttrain")
             print("\tweigt g/l1/l2:{g}, {l1}, {l2}".format(g=args.GAN_lambda, l1=args.L1_lambda, l2=args.L2_lambda))
             print("\tschedule d-g: {dsche},{gsche}".format(dsche=args.d_sche, gsche=args.g_sche))
+            print("\ttanh smoothing {sm}".format(sm=args.smoothe))
             print("\n\n")
             model.train(args)
         else:

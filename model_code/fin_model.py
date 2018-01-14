@@ -16,7 +16,7 @@ class pix2pix(object):
                  gf_dim=64, df_dim=64, L1_lambda=100, L2_lambda=0, GAN_lambda=1,
                  input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
                  checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None, 
-                 logdir=None, d_sche=None, g_sche=None):
+                 logdir=None, d_sche=None, g_sche=None, smoothe=1.0):
         """
 
         Args:
@@ -28,6 +28,8 @@ class pix2pix(object):
             input_c_dim: (optional) Dimension of input image color. For grayscale input, set to 1. [3]
             output_c_dim: (optional) Dimension of output image color. For grayscale input, set to 1. [3]
         """
+        self.smoothe=smoothe
+
         self.d_sche=d_sche
         self.g_sche=g_sche
 
@@ -233,7 +235,7 @@ class pix2pix(object):
                 if np.mod(counter, 100) == 1:
                     self.sample_model(self.sample_dir, epoch, idx)
                     #sys.exit("sampling test")
-                    
+
                 if np.mod(counter, 500) == 2:
                     self.save(self.checkpoint_dir, counter)
 
@@ -262,7 +264,7 @@ class pix2pix(object):
 
 
 
-    def generator(self, image, y=None):
+    def generator(self, image, smoothe=1.0):
         with tf.variable_scope("generator") as scope:
 
             s = self.output_size
@@ -342,7 +344,7 @@ class pix2pix(object):
                 [self.batch_size, s, s, self.output_c_dim], name='g_d8', with_w=True)
             # d8 is (1024 x 1024 x output_c_dim)
 
-            return tf.nn.tanh(self.d8)
+            return tf.nn.tanh(smoothe*self.d8)
 
     def sampler(self, image, y=None):
 
