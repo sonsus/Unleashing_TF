@@ -226,6 +226,9 @@ class pix2pix(object):
 
                 
                 #if np.mod(counter, 2) == 1:
+                if counter in range(40) and np.mod(counter,5)=0:
+                    self.sample_model(self.sample_dir, epoch, idx)
+                    self.save(self.checkpoint_dir, counter)
                 if np.mod(counter, 100) == 1:
                     self.sample_model(self.sample_dir, epoch, idx)
                     #sys.exit("sampling test")
@@ -426,7 +429,7 @@ class pix2pix(object):
 
 
     def save(self, checkpoint_dir, step):
-        model_name = "pix2pix.model"
+        model_name = "pix2pix{step}.model".format(step=step)
         self.saver.save(self.sess,
                         os.path.join(checkpoint_dir, model_name),
                         global_step=step)
