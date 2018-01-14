@@ -68,9 +68,10 @@ def main(_):
     if not os.path.exists(new_test_dir):
         os.makedirs(new_test_dir)
 
+    # allow gpu memory growth
+
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
-    #session = tf.Session(config=config, ...)
 
     with tf.Session(config=config) as sess:
         if  args.phase=='train': 
