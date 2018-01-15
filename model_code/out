@@ -1,0 +1,84 @@
+On branch master
+Your branch is up-to-date with 'origin/master'.
+
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+	new file:   __pycache__/preprocess.cpython-36.pyc
+	new file:   __pycache__/wav2spec.cpython-36.pyc
+	new file:   en_1.npy.jpg
+	new file:   en_11.npy.jpg
+	new file:   en_110000.npy.jpg
+	new file:   en_1100000.npy.jpg
+	new file:   en_1100001.npy.jpg
+	new file:   en_1100002.npy.jpg
+	new file:   en_1100003.npy.jpg
+	new file:   en_1100004.npy.jpg
+	new file:   en_1100005.npy.jpg
+	new file:   en_1100006.npy.jpg
+	new file:   en_1100007.npy.jpg
+	new file:   en_1100008.npy.jpg
+	new file:   en_1100009.npy.jpg
+	new file:   en_110001.npy.jpg
+	new file:   en_1100010.npy.jpg
+	new file:   en_1100011.npy.jpg
+	new file:   en_1100012.npy.jpg
+	new file:   en_1100013.npy.jpg
+	new file:   en_1100014.npy.jpg
+	new file:   en_1100015.npy.jpg
+	new file:   en_1100016.npy.jpg
+	new file:   en_1100017.npy.jpg
+	new file:   en_1100018.npy.jpg
+	new file:   en_1100019.npy.jpg
+	new file:   en_110002.npy.jpg
+	new file:   en_1100020.npy.jpg
+	new file:   en_1100021.npy.jpg
+	new file:   en_1100022.npy.jpg
+	new file:   en_1100023.npy.jpg
+	new file:   en_1100024.npy.jpg
+	new file:   en_1100025.npy.jpg
+	new file:   en_1100026.npy.jpg
+	new file:   out
+	modified:   preprocess.py
+	new file:   test_writespecgram.py
+	new file:   testen.jpg
+	new file:   testvo.jpg
+	new file:   vo_1.npy.jpg
+	new file:   vo_11.npy.jpg
+	new file:   vo_110000.npy.jpg
+	new file:   vo_1100000.npy.jpg
+	new file:   vo_1100001.npy.jpg
+	new file:   vo_1100002.npy.jpg
+	new file:   vo_1100003.npy.jpg
+	new file:   vo_1100004.npy.jpg
+	new file:   vo_1100005.npy.jpg
+	new file:   vo_1100006.npy.jpg
+	new file:   vo_1100007.npy.jpg
+	new file:   vo_1100008.npy.jpg
+	new file:   vo_1100009.npy.jpg
+	new file:   vo_110001.npy.jpg
+	new file:   vo_1100010.npy.jpg
+	new file:   vo_1100011.npy.jpg
+	new file:   vo_1100012.npy.jpg
+	new file:   vo_1100013.npy.jpg
+	new file:   vo_1100014.npy.jpg
+	new file:   vo_1100015.npy.jpg
+	new file:   vo_1100016.npy.jpg
+	new file:   vo_1100017.npy.jpg
+	new file:   vo_1100018.npy.jpg
+	new file:   vo_1100019.npy.jpg
+	new file:   vo_110002.npy.jpg
+	new file:   vo_1100020.npy.jpg
+	new file:   vo_1100021.npy.jpg
+	new file:   vo_1100022.npy.jpg
+	new file:   vo_1100023.npy.jpg
+	new file:   vo_1100024.npy.jpg
+	new file:   vo_1100025.npy.jpg
+	new file:   vo_1100026.npy.jpg
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   out
+

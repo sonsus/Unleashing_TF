@@ -240,11 +240,11 @@ def get_test_vo_ex_array(songdir, win_size=win_size,st_size=st_size*2,tagfilepat
 def write_specgram_img(specgram, imgname):   #jpgname with .png
 #specgram here has the shape = (1024,1024,2)
     fig, ax = plt.subplots(nrows=1,ncols=1)
-    plt.axis("scaled")
+    #plt.axis("scaled")
     cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
-    #fig.colorbar(cax)
+    fig.colorbar(cax)
     plt.title('upper: generated_ensemble\n middle:original_ensemble\nlower: vocal_only')
-    plt.savefig(imgname,dpi="figure")
+    plt.savefig(imgname, dpi="figure", bbox_inches="tight")
 
 
 #takes too much time running. must be used only for testing
