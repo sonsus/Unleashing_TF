@@ -76,8 +76,19 @@ def main(_):
         if  args.phase=='train': 
             npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
             if len(npytrfiles)>0: pass
-            else: pr.generate_concat_npyfile( os.path.join(os.getcwd(),args.dataset_name), 
+            else: 
+                pr.generate_concat_npyfile( os.path.join(os.getcwd(),args.dataset_name), 
                                     tagfilepath= os.path.join(args.dataset_name,args.train_tagfile_name) ) # ./dataset_name is the dir name for the dataset 
+                # verify data is not ill-processed 
+                testerfile=npytrfiles[10]
+                tester_ndarray = np.load(testerfile)
+                test_vo=tester_ndarray[:,:,0].reshape((1024,1024))
+                test_en=tester_ndarray[:,:,1].reshape((1024,1024))
+                pr.write_specgram_img(test_vo, "{filepath}_vo.jpg".format(filepath=npytrfiles[10]))
+                pr.write_specgram_img(test_en, "{filepath}_en.jpg".format(filepath=npytrfiles[10]))
+
+
+
         elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, 
                                     tagfilepath= os.path.join(new_test_dir,args.test_tagfile_name) )
         else: exit("--phase argument is only train or test")
