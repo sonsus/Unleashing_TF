@@ -69,7 +69,6 @@ def main(_):
         os.makedirs(new_test_dir)
 
     # allow gpu memory growth
-
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
 
@@ -77,10 +76,10 @@ def main(_):
         if  args.phase=='train': 
             npytrfiles=glob("./{dataset}/*.npy".format(dataset=args.dataset_name))
             if len(npytrfiles)>0: pass
-            else: pr.generate_concat_npyfile("./"+args.dataset_name+"/", 
-                                    tagfilepath=args.dataset_name+"/"+args.train_tagfile_name) # ./dataset_name is the dir name for the dataset 
+            else: pr.generate_concat_npyfile( os.path.join(os.getcwd(),args.dataset_name), 
+                                    tagfilepath= os.path.join(args.dataset_name,args.train_tagfile_name) ) # ./dataset_name is the dir name for the dataset 
         elif args.phase=='test' : pr.generate_v_only_npyfile(args.test_dir, 
-                                    tagfilepath=new_test_dir+"/"+args.test_tagfile_name)
+                                    tagfilepath= os.path.join(new_test_dir,args.test_tagfile_name) )
         else: exit("--phase argument is only train or test")
 
         model = pix2pix(sess, image_size=args.fine_size, batch_size=args.batch_size,

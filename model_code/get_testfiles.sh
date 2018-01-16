@@ -1,3 +1,4 @@
+cp ../../bolbbalgan4_organized/* ./bolbbalgan4
 cp bolbbalgan4/m016.wav  test/ 
 cp bolbbalgan4/n015.wav  test/
 cp bolbbalgan4/r014.wav  test/

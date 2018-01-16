@@ -112,9 +112,12 @@ def iterative_windower(win_size, st_size, wav, voice_rangetuples_list):
     songpiece_list=[]
     for one_range in rangelist_set:
         for stpt in one_range:
-            if (filtered_wav.shape[0]-stpt*rate) < win_size*rate: continue
+            start = int(stpt*rate)
+            end  =  int( (stpt+win_size)*rate )
+            length= int(win_size*rate)
+            if (filtered_wav.shape[0]-start) < length: continue
             else: 
-                songpiece=filtered_wav[stpt*rate:(stpt+win_size)*rate]
+                songpiece=filtered_wav[start:end]
                 songpiece_list.append(songpiece)
     songpiece_array=np.array(songpiece_list)
     return rate, songpiece_array
@@ -124,12 +127,12 @@ def get_spec_concat_npy(rate_v, rate_o, voice_crop_arry, orig_crop_arry, song_no
     for piece_no in range(len(voice_crop_arry)):
         spec_v=get_specgram(rate_v, voice_crop_arry[piece_no])
         spec_o=get_specgram(rate_o, orig_crop_arry[piece_no])
-        print("spec_o shape={shape}".format(shape=spec_o.shape))
+        #print("spec_o shape={shape}".format(shape=spec_o.shape))
         rs_spec_v=np.reshape(spec_v,(1024,1024,1))
         rs_spec_o=np.reshape(spec_o,(1024,1024,1))
         concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=2)  #when feeding to the graph, axis=2 (see fin_model.build_model())
-        print("saved array shape=")
-        print(concat_piece.shape)
+        #print("saved array shape=")
+        #print(concat_piece.shape)
         #concat_piece=np.concatenate((rs_spec_v,rs_spec_o), axis=1) #when need to visualize, axis=1 HOW WEIRD?!
         save_data2npy(name_counter=song_no+piece_no, nparray=concat_piece, savedir=savedir)
         # first piece of the first song will be named as 10000(song#)+1(piece#)==10001.npy
@@ -166,14 +169,15 @@ def split2_indiv_spec(spec_concat,select):#if select ="voice" --> returns voice 
 
 def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepath=tagfilepath):
     #windowsize and stepsize for chopping wavs. not for specgram
-    print("generate_concat_npyfile")
+    #print("generate_concat_npyfile")
     for i, wav in enumerate(os.listdir(songdir)): #maybe, separated song should be located at lower hierarchy of wav dir
-        if wav[0:3]=="vo_" or wav[-4:]!=".wav": continue
-        else: 
+        if wav[0:3]!="vo_" and wav[-4:]==".wav":
+            print(wav) 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
             rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
             rate_o, o_crop_arry=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
             get_spec_concat_npy(rate_v, rate_o, v_crop_arry, o_crop_arry, i*10000, songdir)  
+        else: continue
 
 #            save_data2npy(name_counter=counter, nparray=spec_concat_array, save_dir=songdir)
 #            counter+=1 
