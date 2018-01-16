@@ -174,8 +174,8 @@ def generate_concat_npyfile(songdir, win_size=win_size,st_size=st_size,tagfilepa
         if wav[0:3]!="vo_" and wav[-4:]==".wav":
             print(wav) 
             voice_rangetuples_list=tag2range(wav,tagfilepath)
-            rate_v, v_crop_arry=iterative_windower(win_size, st_size, songdir+"vo_"+wav, voice_rangetuples_list)
-            rate_o, o_crop_arry=iterative_windower(win_size, st_size, songdir+wav, voice_rangetuples_list)
+            rate_v, v_crop_arry=iterative_windower(win_size, st_size, os.path.join(songdir,"vo_"+wav), voice_rangetuples_list)
+            rate_o, o_crop_arry=iterative_windower(win_size, st_size, os.path.join(songdir,wav), voice_rangetuples_list)
             get_spec_concat_npy(rate_v, rate_o, v_crop_arry, o_crop_arry, i*10000, songdir)  
         else: continue
 
