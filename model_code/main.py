@@ -79,13 +79,14 @@ def main(_):
             else: 
                 pr.generate_concat_npyfile( os.path.join(os.getcwd(),args.dataset_name), 
                                     tagfilepath= os.path.join(args.dataset_name,args.train_tagfile_name) ) # ./dataset_name is the dir name for the dataset 
-                # verify data is not ill-processed 
-                testerfile=npytrfiles[10]
-                tester_ndarray = np.load(testerfile)
-                test_vo=tester_ndarray[:,:,0].reshape((1024,1024))
-                test_en=tester_ndarray[:,:,1].reshape((1024,1024))
-                pr.write_specgram_img(test_vo, "{filepath}_vo.jpg".format(filepath=npytrfiles[10]))
-                pr.write_specgram_img(test_en, "{filepath}_en.jpg".format(filepath=npytrfiles[10]))
+            # verify data is not ill-processed 
+            print(len(npytrfiles))
+            testerfile=npytrfiles[10]
+            tester_ndarray = np.load(testerfile)
+            test_vo=tester_ndarray[:,:,0].reshape((1024,1024))
+            test_en=tester_ndarray[:,:,1].reshape((1024,1024))
+            pr.write_specgram_img(test_vo, "{filepath}_vo.jpg".format(filepath=testerfile))
+            pr.write_specgram_img(test_en, "{filepath}_en.jpg".format(filepath=testerfile))
 
 
 
