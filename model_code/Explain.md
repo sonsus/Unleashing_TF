@@ -47,10 +47,9 @@ muhan_records/
    
 
 > main.py: from 75th line to 95th line      
-
-1 session is made and check running phase (train or test)
-2 now pr.generate_concat_npyfile() make specgram into np.ndarray and save its binary as an npyfile
-3 in case args.phase == "test", data processing pipelines are similar (never ran before. no warranty)
+1 session is made and check running phase (train or test)   
+2 now pr.generate_concat_npyfile() make specgram into np.ndarray and save its binary as an npyfile     
+3 in case args.phase == "test", data processing pipelines are similar (never ran before. no warranty)    
 
 
 ```python
