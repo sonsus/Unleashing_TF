@@ -35,14 +35,14 @@ muhan_records/
 2 filtered signal (= songpiece array, 2D ndarray) ----(wav2spec.py)---->    
 3 specgram (2D ndarray with 1 colorchannel = (1024,1024,1) ) -------->
 4 .npy (binary, ndarray=np.load("\*.npy"))
-
-### generate_concat_npyfile exploits...   
+```python
+preprocess.generate_concat_npyfile() exploits...   
  tag2range(): determine what part of the song to be chopped (time tag --> np.ndarray slicing)    
- iterative_windower    
+ iterative_windower()    
  get_specgram()    
- np.concat    
+ np.concat()    
  save_data2npy()   
-   
+```
 
    
 
