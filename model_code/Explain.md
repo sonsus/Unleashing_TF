@@ -3,8 +3,9 @@ How our spectrograms are made and fed into the model
 
 
 ## TL;DR:    
-1. pr.generate_concat_npyfile to make npyfiles in bolbbalgan4/, 
-2. use np.load(----.npy) to read the data (fin_model.py: load_npy())
+0. git clone https://github.com/sonsus/muhan_records
+1. @main.py: pr.generate_concat_npyfile() to make npyfiles in bolbbalgan4/, 
+2. @fin_model.py: use np.load(----.npy) to read the data (@utils.py: load_npy())
 3. critical directory structure is critical
 
 
