@@ -31,6 +31,8 @@ muhan_records/
 ## details    
 
 > preprocess.py:    
+0 st_size =1 : window sliding step size by seconds (must be <= 3, float available)    
+0-1 win_size =4 is DEPRECATED, which needs to be >=4. do not change    
 1 wav (1D ndarray) ----(wav2spec.py)---->   
 2 filtered signal (= songpiece array, 2D ndarray) ----(wav2spec.py)---->    
 3 specgram (2D ndarray with 1 colorchannel = (1024,1024,1) ) -------->
