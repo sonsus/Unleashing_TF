@@ -43,8 +43,8 @@ parser.add_argument('--L2_lambda', dest='L2_lambda', type=float, default=0, help
 parser.add_argument('--GAN_lambda', dest='GAN_lambda', type=float, default=1, help='weight on GAN term in objective')
 
 #generator, discriminator schedule
-parser.add_argument('--numD', dest='d_sche', type=int, default=1, help='number of G optim')
-parser.add_argument('--numG', dest='g_sche', type=int, default=2, help='number of D optim')
+parser.add_argument('--numD', dest='d_sche', type=int, default=4, help='number of G optim')
+parser.add_argument('--numG', dest='g_sche', type=int, default=1, help='number of D optim')
 parser.add_argument('--smoothe', dest='smoothe', type=float, default=1, help='generator tanh smoothing')
 
 args = parser.parse_args()
@@ -107,6 +107,7 @@ def main(_):
             print("\tweigt g/l1/l2:{g}, {l1}, {l2}".format(g=args.GAN_lambda, l1=args.L1_lambda, l2=args.L2_lambda))
             print("\tschedule d-g: {dsche},{gsche}".format(dsche=args.d_sche, gsche=args.g_sche))
             print("\ttanh smoothing {sm}".format(sm=args.smoothe))
+            #print("\tpooling {pl}".format(pl=args.pool)) there is no pooling for enc/decoder
             print("\n\n")
             model.train(args)
         else:

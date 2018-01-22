@@ -16,7 +16,7 @@ class pix2pix(object):
                  gf_dim=64, df_dim=64, L1_lambda=100, L2_lambda=0, GAN_lambda=1,
                  input_c_dim=1, output_c_dim=1, dataset_name='bolbbalgan4',
                  checkpoint_dir=None, sample_dir=None, test_dir=None, tagfile_path=None, 
-                 logdir=None, d_sche=None, g_sche=None, smoothe=1.0):
+                 logdir=None, d_sche=None, g_sche=None, smoothe=1.0,):
         """
 
         Args:
@@ -117,7 +117,7 @@ class pix2pix(object):
         self.d_loss_real_sum = tf.summary.scalar("d_loss_real", self.d_loss_real)
         self.d_loss_fake_sum = tf.summary.scalar("d_loss_fake", self.d_loss_fake)
 
-        self.d_loss = self.d_loss_real + self.d_loss_fake
+        self.d_loss = (self.d_loss_real + self.d_loss_fake) / float(self.d_sche/self.g_sche)
 
         self.g_loss_sum = tf.summary.scalar("g_loss", self.g_loss)
         self.d_loss_sum = tf.summary.scalar("d_loss", self.d_loss)
@@ -206,15 +206,15 @@ class pix2pix(object):
                 #print("batch:\t{b}".format(b=np.array(batch).shape))
                 batch_images = np.array(batch).astype(np.float32)
 
-                for d_schedule in range(self.d_sche):
-                    _, summary_str = self.sess.run([d_optim, self.d_sum],
-                                                   feed_dict={ self.real_data: batch_images })
-                    self.writer.add_summary(summary_str, counter)
+                #for d_schedule in range(self.d_sche): --> Dloss dividened by d_sche
+                _, summary_str = self.sess.run([d_optim, self.d_sum],
+                                               feed_dict={ self.real_data: batch_images })
+                self.writer.add_summary(summary_str, counter)
 
-                for g_schedule in range(self.g_sche):
-                    _, summary_str = self.sess.run([g_optim, self.g_sum],
-                                                   feed_dict={ self.real_data: batch_images })
-                    self.writer.add_summary(summary_str, counter)
+                #for g_schedule in range(self.g_sche):
+                _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                               feed_dict={ self.real_data: batch_images })
+                self.writer.add_summary(summary_str, counter)
 
 
                 errD_fake = self.d_loss_fake.eval({self.real_data: batch_images})
