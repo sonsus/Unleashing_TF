@@ -13,7 +13,7 @@ signal = signal[0:int(3.5 * sample_rate)]  # Keep the first 3.5 seconds
 
 #pre_emphasis
 pre_emphasis = 0.97 #typically 0.95 or 0.97
-emphasized_signal = numpy.append(signal[0], signal[1:] - pre_emphasis * signal[:-1])
+\ emphasized_signal = numpy.append(signal[0], signal[1:] - pre_emphasis * signal[:-1])
 
 #framing
 frame_length, frame_step = frame_size * sample_rate, frame_stride * sample_rate  # Convert from seconds to samples
