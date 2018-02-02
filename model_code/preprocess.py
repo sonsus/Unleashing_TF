@@ -37,7 +37,7 @@ import sys
 ####parameters#####
 #windowing, step size for chopping the specgram.
 win_size=4
-st_size=1           #also float available
+st_size=0.5           #also float available
 
 songdir="monowav/files/directory/"      #beware this must contain "/"
 tagfilepath="where/exists/tagfile.txt"  
