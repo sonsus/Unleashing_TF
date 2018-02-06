@@ -14,4 +14,4 @@ in windows
 C:\Users\SEONIL\AppData\Roaming\Sublime Text 3\Local\
 
 in ubuntu
-Somewhere/Appdata/of/Sublime/lives/ .... /Lib/session
+~/.config/sublime-text-3/Local
