@@ -1,0 +1,33 @@
+@ pytorch-Cyclegan... /data/
+
+1. aligned_dataset.py
+ : __getitem__ 
+
+   - reshaped our data into 1024,2048 and fed it into
+   - rgb removed, rgb to gray also removed
+2. image_folder.py
+ : functions for img extensions --> npy extensions
+ : class ImageFolder img-->npy, imgs-->npys 
+
+
+
+@ /options
+1. base_option.py
+  -fineSize default: 512--> 1024
+  -loadSize default: 286
+  -in/output nc: 3--> 1
+  -dataroot default: (None)--> "./datasets/bolbbalgan4"
+
+
+@ /utils
+1. preprocess.py --> cant I just move write specgram? does it have too much dependency? V
+	- done: moved the function and its dependency packages added on top (matplotlib, agg, numpy)
+
+2. lesion out visdom server and dominate? fucking annoying and might cause some bottleneck during training
+	- asked to Seung
+
+3. events file writer for pytorch ---> nashory ?
+
+
+
+git branches: forked repo, allowing push to my fork how?
