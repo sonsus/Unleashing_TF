@@ -55,7 +55,8 @@ $ vi jupyter_notebook_config.py
 (4) enjoy!
 (5) to run the jupyter notebook after ssh termination, refer to 'remote_running.txt' in this folder
 
-
+4. if kernels dont show:
+    $ conda install nb_conda_kernels
 
 
 ----------------------------------------------------------------------------------------
