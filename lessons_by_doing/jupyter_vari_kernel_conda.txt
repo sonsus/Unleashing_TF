@@ -1,3 +1,5 @@
+>>> just installing conda `nb_conda_kernels` will help for sure but if manual handling needed <<< 
+
 1. manually installing another version of python kernel on jupyter
 
 for conda 
