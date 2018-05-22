@@ -1,4 +1,5 @@
 http://emflant.tistory.com/127
+http://cpdev.tistory.com/51
 
 ### 1. `-h` after any command will show lots of things rather than `--help`  
 ### 2. to ignore folders make `.gitignore` file:    
