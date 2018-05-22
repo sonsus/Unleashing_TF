@@ -8,4 +8,3 @@ http://emflant.tistory.com/127
   - `**/file.txt` works similarly    
 ### 3. `git pull origin seonil222`:     
   - pull `origin/seonil222` to local current branch 
-### 4. `git clone https://-----/---/` and git checkout 
