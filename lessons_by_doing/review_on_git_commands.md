@@ -8,4 +8,11 @@ http://cpdev.tistory.com/51
   - `/a/**/b/` will exclude any directory starts from `/a/` and ends with `b/`
   - `**/file.txt` works similarly    
 ### 3. `git pull origin seonil222`:     
-  - pull `origin/seonil222` to local current branch 
+  - pull `origin/seonil222` to local current branch    
+     
+     
+
+### 4. revert the repository (wiping out all the changes: DANGER for collabo. work)
+  - `git reset --hard <old-commit-id>`
+  - `git push -f <remote-name> <branch-name>`
+
