@@ -45,3 +45,6 @@
 - changing D/G ratio of alternating, learning rate, changing trainingset splits ---> nothing succeeded
 - maybe spectrogram input badly preprocessed
 - need normalization but how to do that w/o losing info which would cause crucial deformation on retrieved sound quality
+
+#### bunch of GAN papers were gone thru...
+DCGAN, lsGAN, wGAN, cGAN, cycleGAN, BEGAN, pgGAN, bicycleGAN...
