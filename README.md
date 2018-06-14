@@ -19,8 +19,8 @@
 - cropped with 1sec windowing
 - to make the input square-shaped, 1024 timestep (=3.x secs) window is chosen
 ### visualized
-![Image of voice](https://github.com/sonsus/muhan_records/blob/master/1700012.npy_vo.jpg)   
-![Image of ensemble](https://github.com/sonsus/muhan_records/blob/master/1700012.npy_en.jpg)
+![Image of voice1](https://github.com/sonsus/muhan_records/blob/master/1700012.npy_vo.jpg)   
+![Image of ensemble1](https://github.com/sonsus/muhan_records/blob/master/1700012.npy_en.jpg)
 
 ### Spectrogram transform
 - FFT with 1024 bin bunch of constants written in the code
