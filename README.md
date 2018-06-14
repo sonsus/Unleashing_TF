@@ -18,6 +18,10 @@
 - voiceless parts were abandoned
 - cropped with 1sec windowing
 - to make the input square-shaped, 1024 timestep (=3.x secs) window is chosen
+### visualized
+![Image of voice](https://)
+![Image of ensemble]()
+
 ### Spectrogram transform
 - FFT with 1024 bin bunch of constants written in the code
 
@@ -38,3 +42,6 @@
 - seems like generator makes rational image of spectrograms at a first glance
 - it starts getting worse and never getting back
 - failed even for training set fitting
+- changing D/G ratio of alternating, learning rate, changing trainingset splits ---> nothing succeeded
+- maybe spectrogram input badly preprocessed
+- need normalization but how to do that w/o losing info which would cause crucial deformation on retrieved sound quality
