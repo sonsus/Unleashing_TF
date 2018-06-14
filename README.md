@@ -1,3 +1,5 @@
+# Unleashing limit project log 1: pix2pix
+(continued on log2: //https://github.com/sonsus/generative-models/blob/master/README.md)
 # pix2pix for generating karaoke sound (for given a vocal)
 ## blueprint
 1. GAN seems to synthesize fake faces quite well
