@@ -1,0 +1,10 @@
+NV_GPU=2 nvidia-docker run --shm-size 8G --name=s_gpu2 -i -t -p 22 -p 6006 -p 8888 -v /disk1:/root/storage --label=username=$USER seonil/condaimg:ver1_4 /bin/bash
+
+--> only GPU 2 is attached to the container
+
+nvidia-docker run --shm-size 8G --name=s_gpu2 -i -t -p 22 -p 6006 -p 8888 -v /disk1:/root/storage --label=username=$USER seonil/condaimg:ver1_4 /bin/bash
+
+--> all visible GPU devices attached to the container
+
+CUDA_VISIBLE_DEVICES=1 python eval.py
+: run eval.py script with GPU 1
