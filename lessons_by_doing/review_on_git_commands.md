@@ -18,6 +18,11 @@ https://stackoverflow.com/questions/6565357/git-push-requires-username-and-passw
   - `git push -f <remote-name> <branch-name>`
 
 ### 5. skip typing username/pw for each git push? nahh...    
- - use ssh clone of the remote that is `ssh://git@github.com/username/repo.git` not `https://,,,,`     
- (`git remote set-url origin git@github.com:username/repo.git`)    
- - or `git remote set-url origin https://name:password@github.org/repo.git `
+``` 
+$ git config credential.helper store    
+$ git push https://github.com/repo.git   
+     
+Username for 'https://github.com': <USERNAME>    
+Password for 'https://USERNAME@github.com': <PASSWORD>    
+```
+
