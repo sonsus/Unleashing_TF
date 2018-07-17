@@ -20,7 +20,7 @@ https://stackoverflow.com/questions/6565357/git-push-requires-username-and-passw
 ### 5. skip typing username/pw for each git push? nahh...    
 ``` 
 $ git config credential.helper store    
-$ git push https://github.com/repo.git   
+$ git push [remote repo url]   
      
 Username for 'https://github.com': <USERNAME>    
 Password for 'https://USERNAME@github.com': <PASSWORD>    
