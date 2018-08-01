@@ -1,6 +1,6 @@
 
 ### CUDA install by web repository: Google Cloud Platform   
-    
+(https://cloud.google.com/compute/docs/gpus/add-gpus)    
     
 ```bash   
 #!/bin/bash
