@@ -1,5 +1,5 @@
 # Unleashing limit project log 1: pix2pix (P.Isola et al. CVPR2016)
-(continued on log2: //https://github.com/sonsus/generative-models/blob/master/README.md)
+(continued on log2: //https://github.com/sonsus/Unleashing2_pytorch)
 # pix2pix for generating karaoke sound (for a given vocal)
 ## blueprint
 1. GAN seems to synthesize fake faces quite well
