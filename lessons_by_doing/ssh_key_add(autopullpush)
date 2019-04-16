@@ -1,0 +1,9 @@
+https://rutesun.wordpress.com/2015/02/04/git-bash-%EA%B0%9C%EC%9D%B8%ED%82%A4-%EB%93%B1%EB%A1%9D%EC%8B%9C-%EC%97%90%EB%9F%AC/
+
+ssh-agent -s
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
+
+
+
+git pull/push won't ask pw again!
