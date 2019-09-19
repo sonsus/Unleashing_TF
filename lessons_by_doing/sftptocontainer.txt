@@ -1,0 +1,5 @@
+openssh-server 설치
+/etc/ssh/sshd_config 에서 root login yes로 설정
+passwd로 비번설정
+service ssh start
+
