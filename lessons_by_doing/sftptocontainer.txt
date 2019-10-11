@@ -1,5 +1,7 @@
 openssh-server 설치
-/etc/ssh/sshd_config 에서 root login yes로 설정
+/etc/ssh/sshd_config 에서 root login yes로 설정 / RSA authentication 부분 비활성화
 passwd로 비번설정
 service ssh start
+service ssh restart
+
 
