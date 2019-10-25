@@ -1,0 +1,3 @@
+## rewrite all history that excludes all the history of the large file that made problem
+
+git filter-branch --index-filter 'git rm -r --cached --ignore-unmatch [filepath here]' HEAD
