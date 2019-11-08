@@ -1,0 +1,18 @@
+https://superuser.com/questions/1064197/how-to-switch-git-user-at-terminal
+
+See registered users
+
+git config --list
+
+
+Change username and email global
+
+git config --global user.name "Nanhe Kumar"
+git config --global user.email "info@nanhekumar.com"
+
+
+
+Change username and email for current repo
+
+git config  user.name "Nanhe Kumar"
+git config  user.email "info@nanhekumar.com"
