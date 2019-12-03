@@ -1,0 +1,3 @@
+python -m cProfile -s tottime <myScript> <argumentList> > output
+
+https://hulk89.github.io/python/2016/08/17/Profiler/
