@@ -1,0 +1,2 @@
+with authentication:
+curl -u username -O sftp://server1.cyberciti.biz/path/to/file.txt [-O if_another_file] 
