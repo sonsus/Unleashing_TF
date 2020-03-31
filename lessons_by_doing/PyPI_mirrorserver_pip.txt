@@ -1,0 +1,10 @@
+mkdir ~/.pip
+vi ~/.pip/pip.conf
+
+[global]
+index-url=http://ftp.daumkakao.com/pypi/simple
+trusted-host=ftp.daumkakao.com
+
+
+
+reference: http://www.kwangsiklee.com/2018/05/%EC%B9%B4%EC%B9%B4%EC%98%A4-pypi-mirror-%EC%A0%80%EC%9E%A5%EC%86%8C%EB%A1%9C-pip-%EC%84%A4%EC%B9%98-%EC%86%8D%EB%8F%84-%EB%86%92%EC%9D%B4%EA%B8%B0/
