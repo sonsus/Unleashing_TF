@@ -1,0 +1,6 @@
+#problem IRL: 
+--> usually checking HDMI cable will solve. (usually unintended impacts on machine might loosen the connected spot)
+xrandr 
+>> see the monitor connected
+
+xrandr --output HDMI-0 --rate 60
