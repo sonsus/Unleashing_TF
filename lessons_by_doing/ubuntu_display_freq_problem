@@ -1,0 +1,4 @@
+xrandr 
+>> see the monitor connected
+
+xrandr --output HDMI-0 --rate 60
