@@ -1,0 +1,2 @@
+pstree -sg [PID]
+docker ps -q | xargs docker inspect --format '{{.State.Pid__, {{.Name}}' | grep "^%PID%"
