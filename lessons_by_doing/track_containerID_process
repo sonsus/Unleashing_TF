@@ -1,2 +1,1 @@
-pstree -sg [PID]
-docker ps -q | xargs docker inspect --format '{{.State.Pid__, {{.Name}}' | grep "^%PID%"
+DID=$(docker inspect -f '{{.State.Pid}}' <Container ID>);ps --ppid $DID -o pid,ppid,cmd
