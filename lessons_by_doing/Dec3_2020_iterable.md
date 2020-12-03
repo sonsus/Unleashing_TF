@@ -6,7 +6,9 @@ https://stackoverflow.com/a/7542261/8063281
 - make own iterator for the DatasetClass that wraps the tensor 
 
 ### 1. __getitem__(self, idx)
+- define <code>__len__</code> for later comfort. 
 - mind that proper <code>IndexError</code> is expected for <code>StopIteration</code>
+- <code>__getitem__</code> approach is compatible with <code>python 2.x</code>. 
 ### 2. __iter__(self) and __next__(self)
 - this is newer standard but looks getitem is easier for use. 
 - when proper <code>IndexError</code> isn't defined, try this. 
