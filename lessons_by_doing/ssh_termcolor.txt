@@ -5,3 +5,6 @@ replace followings
 --color=auto --> --color
 
 source .bashrc 
+
+
+https://askubuntu.com/questions/517677/how-do-i-get-a-colored-bash
