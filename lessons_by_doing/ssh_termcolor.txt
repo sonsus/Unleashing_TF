@@ -1,0 +1,7 @@
+vi .bashrc 
+/--color
+
+replace followings
+--color=auto --> --color
+
+source .bashrc 
