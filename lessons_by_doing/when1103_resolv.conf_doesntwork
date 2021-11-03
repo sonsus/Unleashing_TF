@@ -1,0 +1,5 @@
+1. resolv.conf 에 제대로된 dns server ip를 지정해주고 재부팅한다.
+2. 만약 도커 데몬을 내려야하는 사유로 그럴 수 없는 경우에는 /etc/hosts에 수동으로 매핑을 시켜줄 수 있다
+[도달할 ip (숫자.숫자.숫자.숫자)] [domainname(인터넷주소)] [alias]
+
+3. 이것을 컨테이너 만들 떄 손대려면 다음을 참조하라 https://docs.docker.com/network/bridge/
